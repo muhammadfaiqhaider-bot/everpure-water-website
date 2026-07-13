@@ -1070,3 +1070,221 @@ h1, h2, h3, h4 {
   font-size: 0.85rem;
   color: var(--text-muted);
 }
+
+/* ==========================================================================
+   FAQ Page
+   ========================================================================== */
+
+.faq-section {
+  padding-block: clamp(2rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+}
+
+.faq-container {
+  max-width: 760px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faq-item {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.25rem 1.5rem;
+  transition: border-color 0.2s ease;
+}
+
+.faq-item[open] {
+  border-color: var(--border-strong);
+}
+
+.faq-question {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.faq-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+  content: "";
+  position: absolute;
+  background: var(--teal);
+  border-radius: 2px;
+  transition: transform 0.2s ease;
+}
+
+/* Horizontal bar of the plus */
+.faq-icon::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+/* Vertical bar of the plus — rotates flat to form a minus when open */
+.faq-icon::after {
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.faq-item[open] .faq-icon::after {
+  transform: translateX(-50%) rotate(90deg);
+  opacity: 0;
+}
+
+.faq-answer {
+  padding-bottom: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+/* ==========================================================================
+   Process Page
+   ========================================================================== */
+
+.process-hero-sub {
+  color: var(--text-muted);
+  max-width: 640px;
+  margin: 1rem auto 2rem;
+}
+
+.scroll-indicator {
+  display: inline-block;
+  font-size: 0.85rem;
+  color: var(--teal);
+  font-weight: 600;
+  animation: bounce-down 1.6s ease-in-out infinite;
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ---------- Phase intro (reuses .section-heading.center) ---------- */
+.phase-intro {
+  padding-block: clamp(3rem, 6vw, 4rem) clamp(1rem, 3vw, 2rem);
+}
+
+/* ---------- Flow steps (purification / delivery) ---------- */
+.flow-section {
+  padding-block: clamp(1rem, 3vw, 2rem) clamp(4rem, 7vw, 5rem);
+}
+
+.flow-steps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 340px;
+  margin-inline: auto;
+}
+
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.flow-step:hover {
+  border-color: var(--border-strong);
+}
+
+.flow-icon {
+  font-size: 1.6rem;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.flow-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.flow-label em {
+  display: block;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.flow-arrow {
+  color: var(--teal);
+  font-size: 1.4rem;
+  line-height: 1;
+  padding-block: 0.35rem;
+}
+
+.process-detail-text {
+  color: var(--text-muted);
+}
+
+/* ---------- Transition banner ---------- */
+.transition-banner {
+  background: var(--gradient-brand);
+  padding-block: clamp(3rem, 6vw, 4.5rem);
+}
+
+.transition-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.transition-line {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.4vw + 1rem, 2.4rem);
+  color: #04141c;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.transition-to {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: rgba(4, 20, 28, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}

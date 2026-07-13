@@ -189,6 +189,22 @@
   .factory-image {
     aspect-ratio: 4 / 3;
   }
+
+  .faq-item {
+    padding-inline: 1rem;
+  }
+
+  .faq-question {
+    font-size: 0.95rem;
+  }
+
+  .flow-steps {
+    max-width: 100%;
+  }
+
+  .transition-line {
+    font-size: 1.6rem;
+  }
 }
 
 /* ---------- Small mobile: 480px and below ---------- */
