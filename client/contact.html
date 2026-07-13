@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | EverPure Drinking Water</title>
+  <meta name="description" content="Get in touch with EverPure — call, WhatsApp, email, or visit our plant. We're here to help with home delivery, office supply, and bulk orders.">
+
+  <link rel="icon" href="assets/logo/logo.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- ===================== HEADER / NAV ===================== -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+
+      <a href="index.html" class="logo">
+        <img src="assets/logo/logo.png" alt="EverPure Drinking Water logo" width="48" height="48">
+        <span class="logo-text">EverPure</span>
+      </a>
+
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="service-areas.html">Service Areas</a></li>
+          <li><a href="process.html">Our Process</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="faq.html">FAQs</a></li>
+          <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="order.html" class="btn btn-primary">Order Now</a>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainNav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Get In Touch</span>
+        <h1>Contact Us</h1>
+        <p class="process-hero-sub">
+          We're here to help! Whether you have questions, need a water delivery,
+          or want to place a bulk order, our team is just a call or message away.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACT METHOD CARDS ===================== -->
+    <section class="contact-methods-section">
+      <div class="container contact-methods-grid">
+
+        <a href="tel:+923361115858" class="contact-card">
+          <span class="contact-icon">📞</span>
+          <h3>Phone</h3>
+          <p class="contact-value">+92 336-1115858</p>
+          <span class="contact-sub">Call us directly</span>
+        </a>
+
+        <a href="https://wa.me/923361115858" target="_blank" rel="noopener" class="contact-card">
+          <span class="contact-icon">💬</span>
+          <h3>WhatsApp</h3>
+          <p class="contact-value">+92 336-1115858</p>
+          <span class="contact-sub">Fast response</span>
+        </a>
+
+        <a href="mailto:everpure@gmail.com" class="contact-card">
+          <span class="contact-icon">✉️</span>
+          <h3>Email</h3>
+          <p class="contact-value">everpure@gmail.com</p>
+          <span class="contact-sub">We'll reply soon</span>
+        </a>
+
+        <!--
+          PLANT LOCATION LINK:
+          Go to Google Maps → search your plant → click "Share" →
+          copy the short link from the "Send a link" tab (NOT the embed tab) →
+          paste it as the href below, replacing the # placeholder.
+        -->
+        <a href="https://maps.app.goo.gl/GnDFJi8Hg21JSUqM9" target="_blank" rel="noopener" class="contact-card">
+          <span class="contact-icon">📍</span>
+          <h3>Location</h3>
+          <p class="contact-value">National Highway, Islamabad, Pakistan</p>
+          <span class="contact-sub">Visit our plant</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ===================== ASSISTANCE + FORM ===================== -->
+    <section class="contact-main-section">
+      <div class="container contact-main-grid">
+
+        <div class="assistance-col">
+          <span class="eyebrow">Need Assistance?</span>
+          <ul class="assistance-list">
+            <li>Have a question?</li>
+            <li>Need a quotation?</li>
+            <li>Business inquiry?</li>
+          </ul>
+
+          <div class="business-hours">
+            <h4>Business Hours</h4>
+            <div class="hours-row">
+              <span>Monday – Saturday</span>
+              <span>9:00 AM – 8:00 PM</span>
+            </div>
+            <div class="hours-row">
+              <span>Sunday</span>
+              <span>Closed / Emergency Orders</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-col">
+          <span class="eyebrow">Contact Form</span>
+
+          <!-- No backend yet — action/method to be wired up once you have a server endpoint -->
+          <form class="contact-form" action="#" method="POST">
+            <label for="cf-name">Name</label>
+            <input type="text" id="cf-name" name="name" placeholder="Your full name" required>
+
+            <label for="cf-phone">Phone</label>
+            <input type="tel" id="cf-phone" name="phone" placeholder="03XX-XXXXXXX" required>
+
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" placeholder="you@example.com">
+
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="message" rows="4" placeholder="How can we help?" required></textarea>
+
+            <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== MAP ===================== -->
+    <section class="map-section">
+      <div class="container">
+        <div class="section-heading center">
+          <span class="eyebrow">Find Us</span>
+          <h2>Find Our Water Plant</h2>
+        </div>
+
+        <div class="map-frame">
+          <!--
+            MAP EMBED:
+            Go to Google Maps → search your plant → click "Share" → "Embed a map" tab →
+            copy the src URL from the provided <iframe> code → paste it below as the src.
+          -->
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1969.9374253468968!2d73.10917209091413!3d33.6459856240217!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfeb5559d78c47%3A0x28393aad73ae387!2sEverpure%20drinking%20water!5e1!3m2!1sen!2s!4v1783940642218!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+            width="100%"
+            height="100%"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="EverPure plant location map">
+          </iframe>
+        </div>
+
+        <!-- Same link as the Location card above -->
+        <a href="https://maps.app.goo.gl/GnDFJi8Hg21JSUqM9" target="_blank" rel="noopener" class="link-arrow map-link">Open in Google Maps</a>
+      </div>
+    </section>
+
+    <!-- ===================== NEED HELP WITH ===================== -->
+    <section class="why-choose">
+      <div class="container">
+        <div class="section-heading center">
+          <span class="eyebrow">We Can Help</span>
+          <h2>Need Help With?</h2>
+        </div>
+
+        <div class="why-grid help-grid">
+          <div class="why-item">
+            <span class="check">✔</span>
+            <span>Home Water Delivery</span>
+          </div>
+          <div class="why-item">
+            <span class="check">✔</span>
+            <span>Office Water Supply</span>
+          </div>
+          <div class="why-item">
+            <span class="check">✔</span>
+            <span>Bulk Orders</span>
+          </div>
+          <div class="why-item">
+            <span class="check">✔</span>
+            <span>Delivery Information</span>
+          </div>
+          <div class="why-item">
+            <span class="check">✔</span>
+            <span>General Inquiries</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CTA ===================== -->
+    <section class="final-cta">
+      <div class="container final-cta-inner">
+        <h2>Ready to Place Your Order?</h2>
+        <p>Fresh, purified drinking water is just one click away.</p>
+        <a href="order.html" class="btn btn-primary btn-lg">Order Now</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <img src="assets/logo/logo.png" alt="EverPure Drinking Water logo" width="48" height="48">
+          <span class="logo-text">EverPure</span>
+        </a>
+        <p>Pure drinking water, delivered across Pakistan.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="process.html">Our Process</a></li>
+          <li><a href="service-areas.html">Service Areas</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="faq.html">FAQs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="order.html">Order Now</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Get in Touch</h4>
+        <p>📞 +92 336-1115858</p>
+        <p>✉️ everpure@gmail.com</p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; <span id="year">2026</span> EverPure Drinking Water. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

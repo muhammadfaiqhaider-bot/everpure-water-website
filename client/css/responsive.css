@@ -55,6 +55,15 @@
     max-width: 480px;
     margin-inline: auto;
   }
+
+  .contact-methods-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-main-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
 }
 
 /* ---------- Mobile: 768px and below ---------- */
@@ -204,6 +213,14 @@
 
   .transition-line {
     font-size: 1.6rem;
+  }
+
+  .contact-methods-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form .btn {
+    align-self: stretch;
   }
 }
 
