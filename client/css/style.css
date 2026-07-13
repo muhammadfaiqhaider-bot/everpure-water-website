@@ -1192,67 +1192,73 @@ h1, h2, h3, h4 {
 }
 
 /* ---------- Flow steps (purification / delivery) ---------- */
+/* ---------- Process timeline (icon + title + description, connected by a line) ---------- */
 .flow-section {
   padding-block: clamp(1rem, 3vw, 2rem) clamp(4rem, 7vw, 5rem);
 }
 
-.flow-steps {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 340px;
+.process-timeline {
+  position: relative;
+  max-width: 620px;
   margin-inline: auto;
 }
 
-.flow-step {
+.process-timeline::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--teal), rgba(34, 211, 197, 0.08));
+}
+
+.timeline-step {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  text-align: center;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1.25rem 1.5rem;
-  width: 100%;
-  transition: border-color 0.2s ease;
+  gap: 1.5rem;
+  padding-bottom: 2.5rem;
 }
 
-.flow-step:hover {
-  border-color: var(--border-strong);
+.timeline-step:last-child {
+  padding-bottom: 0;
 }
 
-.flow-icon {
-  font-size: 1.6rem;
+.timeline-icon {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
   width: 56px;
   height: 56px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: 2px solid var(--teal);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  font-size: 1.5rem;
 }
 
-.flow-label {
-  font-weight: 600;
-  font-size: 0.95rem;
+.timeline-content {
+  padding-top: 0.55rem;
 }
 
-.flow-label em {
-  display: block;
+.timeline-content h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+
+.timeline-content h3 em {
   font-style: normal;
   font-weight: 400;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
-  margin-top: 0.15rem;
 }
 
-.flow-arrow {
-  color: var(--teal);
-  font-size: 1.4rem;
-  line-height: 1;
-  padding-block: 0.35rem;
+.timeline-content p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .process-detail-text {
