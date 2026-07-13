@@ -215,8 +215,22 @@
     font-size: 0.95rem;
   }
 
-  .flow-steps {
+  .process-timeline {
     max-width: 100%;
+  }
+
+  .process-timeline::before {
+    left: 23px;
+  }
+
+  .timeline-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+
+  .timeline-content {
+    padding-top: 0.35rem;
   }
 
   .transition-line {
