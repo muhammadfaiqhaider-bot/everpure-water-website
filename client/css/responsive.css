@@ -64,6 +64,14 @@
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
+
+  .order-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary {
+    position: static;
+  }
 }
 
 /* ---------- Mobile: 768px and below ---------- */
@@ -221,6 +229,48 @@
 
   .contact-form .btn {
     align-self: stretch;
+  }
+
+  .bottle-options {
+    grid-template-columns: 1fr;
+  }
+
+  .timeslot-options {
+    justify-content: space-between;
+  }
+
+  .timeslot-option {
+    flex: 1;
+    text-align: center;
+  }
+
+  .city-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .locality-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .urgent-actions--inline {
+    flex-direction: column;
+  }
+
+  .urgent-actions--inline .btn {
+    width: 100%;
+  }
+
+  .area-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coverage-actions {
+    flex-direction: column;
+  }
+
+  .coverage-actions .btn {
+    width: 100%;
   }
 }
 

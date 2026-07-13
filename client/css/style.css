@@ -1394,14 +1394,21 @@ h1, h2, h3, h4 {
   margin-top: 1rem;
 }
 
-.contact-form label {
+.contact-form label,
+.order-form label {
   font-size: 0.85rem;
   font-weight: 600;
   margin-top: 0.75rem;
 }
 
 .contact-form input,
-.contact-form textarea {
+.contact-form textarea,
+.order-form input[type="text"],
+.order-form input[type="tel"],
+.order-form input[type="email"],
+.order-form input[type="date"],
+.order-form select,
+.order-form textarea {
   background: var(--surface-alt);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -1411,16 +1418,22 @@ h1, h2, h3, h4 {
   font-size: 0.95rem;
   resize: vertical;
   transition: border-color 0.2s ease;
+  width: 100%;
 }
 
 .contact-form input:focus,
-.contact-form textarea:focus {
+.contact-form textarea:focus,
+.order-form input:focus,
+.order-form select:focus,
+.order-form textarea:focus {
   outline: none;
   border-color: var(--teal);
 }
 
 .contact-form input::placeholder,
-.contact-form textarea::placeholder {
+.contact-form textarea::placeholder,
+.order-form input::placeholder,
+.order-form textarea::placeholder {
   color: var(--text-faint);
 }
 
@@ -1453,4 +1466,392 @@ h1, h2, h3, h4 {
 
 .help-grid {
   grid-template-columns: repeat(5, 1fr);
+}
+
+/* ==========================================================================
+   Order Page
+   ========================================================================== */
+
+.order-section {
+  padding-block: clamp(2rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+}
+
+.order-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.order-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-block {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.order-block-title {
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Bottle selection cards ---------- */
+.bottle-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.bottle-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.bottle-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.bottle-option:has(input:checked) {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px var(--teal);
+}
+
+.bottle-size {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--teal);
+  font-size: 1.15rem;
+}
+
+.bottle-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Quantity stepper ---------- */
+.qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.qty-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s ease;
+}
+
+.qty-btn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.qty-stepper input {
+  width: 64px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.5rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ---------- Time slot pills ---------- */
+.timeslot-options {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.timeslot-option {
+  position: relative;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.timeslot-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.timeslot-option:has(input:checked) {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* ---------- Order summary (sticky) ---------- */
+.order-summary {
+  position: sticky;
+  top: 6.5rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+}
+
+.order-submit {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.urgent-box {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.urgent-box h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.9rem;
+}
+
+.urgent-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.urgent-actions .btn {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Service Areas Page
+   ========================================================================== */
+
+/* ---------- City cards ---------- */
+.city-section {
+  padding-block: clamp(1rem, 3vw, 2rem) clamp(3rem, 6vw, 4.5rem);
+}
+
+.city-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.city-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  text-align: center;
+}
+
+.city-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.city-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Locality lists ---------- */
+.locality-section {
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+  padding-block: clamp(3rem, 6vw, 4.5rem);
+}
+
+.locality-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+}
+
+.locality-col h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  margin-bottom: 1.25rem;
+  color: var(--teal);
+}
+
+/* ---------- Coverage map ---------- */
+.coverage-section {
+  padding-block: clamp(4rem, 7vw, 5.5rem);
+}
+
+.coverage-map {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+
+.coverage-map img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverage-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-dot--plant {
+  background: var(--blue);
+}
+
+.legend-dot--coverage {
+  background: var(--teal);
+}
+
+/* ---------- Delivery hours ---------- */
+.hours-section {
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+  padding-block: clamp(3rem, 6vw, 4.5rem);
+}
+
+.hours-card-wide {
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+/* ---------- Inline urgent actions (used outside the sticky order summary) ---------- */
+.urgent-actions--inline {
+  flex-direction: row;
+  justify-content: center;
+}
+
+.urgent-actions--inline .btn {
+  width: auto;
+}
+
+/* ==========================================================================
+   Service Areas Page
+   ========================================================================== */
+
+.area-cards-section {
+  padding-block: clamp(2rem, 4vw, 3rem) clamp(4rem, 8vw, 6rem);
+}
+
+.area-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.area-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+}
+
+.area-card h3 {
+  font-size: 1.2rem;
+  margin: 0.5rem 0 0.2rem;
+}
+
+.area-count {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.locality-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.locality-tags li {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Coverage check (reuses .mission-block background) ---------- */
+.coverage-check {
+  max-width: 560px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.coverage-check h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  margin: 0.5rem 0 0.75rem;
+}
+
+.coverage-check p {
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+}
+
+.coverage-actions {
+  flex-direction: row;
+  justify-content: center;
+}
+
+.coverage-actions .btn {
+  width: auto;
 }
