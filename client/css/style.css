@@ -1191,7 +1191,6 @@ h1, h2, h3, h4 {
   padding-block: clamp(3rem, 6vw, 4rem) clamp(1rem, 3vw, 2rem);
 }
 
-/* ---------- Flow steps (purification / delivery) ---------- */
 /* ---------- Process timeline (icon + title + description, connected by a line) ---------- */
 .flow-section {
   padding-block: clamp(1rem, 3vw, 2rem) clamp(4rem, 7vw, 5rem);
@@ -1862,4 +1861,41 @@ h1, h2, h3, h4 {
 
 .coverage-actions .btn {
   width: auto;
+}
+
+/* ==========================================================================
+   JavaScript-Driven Enhancements
+   These styles react to classes that script.js adds/removes at runtime.
+   Nothing here changes any existing layout — it only activates once JS runs.
+   ========================================================================== */
+
+/* ---------- Sticky navbar scroll state ----------
+   script.js adds "scrolled" to .site-header after ~40px of scroll. */
+.site-header.scrolled {
+  background: rgba(7, 11, 16, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Scroll reveal ----------
+   script.js adds "visible" to each <section> inside <main> as it enters
+   the viewport (via IntersectionObserver). Sections start faded/offset
+   and animate into place the first time they're seen. */
+main > section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+main > section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Respect users who've asked their OS/browser to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  main > section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
