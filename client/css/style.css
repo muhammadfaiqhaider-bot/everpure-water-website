@@ -1510,37 +1510,35 @@ h1, h2, h3, h4 {
   margin-bottom: 0.5rem;
 }
 
-/* ---------- Bottle selection cards ---------- */
-.bottle-options {
+.order-block-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: -0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- Product quantity cards (Choose Products) ---------- */
+.product-qty-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-top: 0.5rem;
 }
 
-.bottle-option {
-  position: relative;
+.product-qty-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
   text-align: center;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 1.25rem 0.75rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.bottle-option input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.bottle-option:has(input:checked) {
+/* script.js adds "active" once quantity > 0 */
+.product-qty-card.active {
   border-color: var(--teal);
   box-shadow: 0 0 0 1px var(--teal);
 }
@@ -1555,6 +1553,71 @@ h1, h2, h3, h4 {
 .bottle-label {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+.product-qty-price {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.qty-stepper--sm {
+  gap: 0.5rem;
+}
+
+.qty-stepper--sm .qty-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+}
+
+.qty-stepper--sm input {
+  width: 48px;
+  padding: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* ---------- Itemized order summary ---------- */
+.summary-items {
+  margin-bottom: 0.5rem;
+}
+
+.summary-empty {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  font-style: italic;
+  padding-block: 0.5rem;
+}
+
+.summary-item-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  padding-block: 0.4rem;
+  border-top: 1px solid var(--border);
+}
+
+.summary-item-row:first-child {
+  border-top: none;
+}
+
+.summary-item-row .summary-item-name {
+  color: var(--text);
+}
+
+.summary-total-row {
+  border-top: 1px solid var(--border-strong);
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.summary-total-row span:last-child {
+  color: var(--teal);
 }
 
 /* ---------- Quantity stepper ---------- */

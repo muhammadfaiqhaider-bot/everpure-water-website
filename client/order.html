@@ -88,40 +88,48 @@
             <textarea id="of-address" name="address" rows="3" placeholder="House / street / area" required></textarea>
           </div>
 
-          <!-- ---------- Choose Bottle ---------- -->
+          <!-- ---------- Choose Products ---------- -->
           <div class="order-block">
-            <h2 class="order-block-title">Choose Bottle</h2>
+            <h2 class="order-block-title">Choose Products</h2>
+            <p class="order-block-hint">Mix and match — set a quantity for any size you'd like.</p>
 
-            <div class="bottle-options" id="bottleOptions">
-              <label class="bottle-option">
-                <input type="radio" name="bottle" value="19L" checked>
+            <!-- Each card is its own product with its own quantity stepper.
+                 data-price is used by script.js to calculate the order total. -->
+            <div class="product-qty-grid" id="productQtyGrid">
+
+              <div class="product-qty-card" data-product="19L Bottle" data-price="80">
                 <span class="bottle-size">19L</span>
                 <span class="bottle-label">Bottle</span>
-              </label>
+                <span class="product-qty-price">Rs. 80 each</span>
+                <div class="qty-stepper qty-stepper--sm">
+                  <button type="button" class="qty-btn" data-action="minus" aria-label="Decrease 19L bottle quantity">&minus;</button>
+                  <input type="number" class="product-qty-input" id="qty19L" value="0" min="0" max="50" readonly>
+                  <button type="button" class="qty-btn" data-action="plus" aria-label="Increase 19L bottle quantity">&plus;</button>
+                </div>
+              </div>
 
-              <label class="bottle-option">
-                <input type="radio" name="bottle" value="1.5L">
+              <div class="product-qty-card" data-product="1.5L Bottle" data-price="60">
                 <span class="bottle-size">1.5L</span>
                 <span class="bottle-label">Bottle</span>
-              </label>
+                <span class="product-qty-price">Rs. 60 each</span>
+                <div class="qty-stepper qty-stepper--sm">
+                  <button type="button" class="qty-btn" data-action="minus" aria-label="Decrease 1.5L bottle quantity">&minus;</button>
+                  <input type="number" class="product-qty-input" id="qty15L" value="0" min="0" max="50" readonly>
+                  <button type="button" class="qty-btn" data-action="plus" aria-label="Increase 1.5L bottle quantity">&plus;</button>
+                </div>
+              </div>
 
-              <label class="bottle-option">
-                <input type="radio" name="bottle" value="500ml">
+              <div class="product-qty-card" data-product="500ml Bottle" data-price="40">
                 <span class="bottle-size">500ml</span>
                 <span class="bottle-label">Bottle</span>
-              </label>
-            </div>
-          </div>
+                <span class="product-qty-price">Rs. 40 each</span>
+                <div class="qty-stepper qty-stepper--sm">
+                  <button type="button" class="qty-btn" data-action="minus" aria-label="Decrease 500ml bottle quantity">&minus;</button>
+                  <input type="number" class="product-qty-input" id="qty500ml" value="0" min="0" max="50" readonly>
+                  <button type="button" class="qty-btn" data-action="plus" aria-label="Increase 500ml bottle quantity">&plus;</button>
+                </div>
+              </div>
 
-          <!-- ---------- Quantity ---------- -->
-          <div class="order-block">
-            <h2 class="order-block-title">Quantity</h2>
-
-            <!-- Stepper buttons need script.js to actually increment/decrement -->
-            <div class="qty-stepper">
-              <button type="button" class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">&minus;</button>
-              <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="50" readonly>
-              <button type="button" class="qty-btn" id="qtyPlus" aria-label="Increase quantity">&plus;</button>
             </div>
           </div>
 
@@ -174,18 +182,26 @@
         <aside class="order-summary">
           <h2 class="order-block-title">Order Summary</h2>
 
-          <!-- These values are static for now — script.js will sync them with the form later -->
+          <!-- script.js fills this with one row per product that has a quantity > 0 -->
+          <div class="summary-items" id="summaryItems">
+            <p class="summary-empty">No products selected yet.</p>
+          </div>
+
           <div class="hours-row">
-            <span>Selected Product</span>
-            <span id="summaryProduct">19L Bottle</span>
+            <span>Delivery Area</span>
+            <span id="summaryArea">—</span>
           </div>
           <div class="hours-row">
-            <span>Quantity</span>
-            <span id="summaryQty">5</span>
+            <span>Subtotal</span>
+            <span id="summarySubtotal">Rs. 0</span>
           </div>
           <div class="hours-row">
-            <span>Delivery</span>
-            <span id="summaryArea">Rawalpindi</span>
+            <span>Delivery Charges</span>
+            <span id="summaryDelivery">Rs. 0</span>
+          </div>
+          <div class="hours-row summary-total-row">
+            <span>Net Total</span>
+            <span id="summaryTotal">Rs. 0</span>
           </div>
 
           <button type="submit" form="orderForm" class="btn btn-primary btn-lg order-submit">Place Order</button>

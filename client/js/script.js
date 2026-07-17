@@ -418,7 +418,7 @@ function initContactFormValidation() {
    Required HTML (already on order.html):
      - <form id="orderForm"> containing:
        #of-name, #of-phone, #of-email (optional), #of-address,
-       input[name="bottle"] (radio group), #qtyInput, #of-area,
+       .product-qty-card elements (at least one needs quantity > 0), #of-area,
        #of-date, input[name="timeslot"] (radio group), #of-notes (optional)
      - Submit button uses form="orderForm" (already set), so listening for
        the form's "submit" event catches it regardless of where the button
@@ -435,7 +435,6 @@ function initOrderFormValidation() {
   const addressInput = form.querySelector('#of-address');
   const areaSelect = form.querySelector('#of-area');
   const dateInput = form.querySelector('#of-date');
-  const qtyInput = form.querySelector('#qtyInput');
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -469,19 +468,16 @@ function initOrderFormValidation() {
       clearFieldError(addressInput);
     }
 
-    // Bottle choice (radio group) — should always have a default checked,
-    // but we confirm just in case.
-    const bottleChecked = form.querySelector('input[name="bottle"]:checked');
-    if (!bottleChecked) {
-      isFormValid = false;
-    }
-
-    const quantityValue = parseInt(qtyInput.value, 10);
-    if (isNaN(quantityValue) || quantityValue < 1) {
-      showFieldError(qtyInput, 'Quantity must be at least 1.');
+    // At least one product must have a quantity greater than 0.
+    const productGrid = document.getElementById('productQtyGrid');
+    const hasAnyProduct = Array.from(document.querySelectorAll('.product-qty-input')).some(
+      (input) => (parseInt(input.value, 10) || 0) > 0
+    );
+    if (!hasAnyProduct) {
+      showFieldError(productGrid, 'Please choose at least one product and set its quantity.');
       isFormValid = false;
     } else {
-      clearFieldError(qtyInput);
+      clearFieldError(productGrid);
     }
 
     if (areaSelect.value === '') {
@@ -530,7 +526,7 @@ function initOrderFormValidation() {
   });
 
   // Clear errors as the person fixes each field.
-  [nameInput, phoneInput, emailInput, addressInput, areaSelect, dateInput, qtyInput].forEach(
+  [nameInput, phoneInput, emailInput, addressInput, areaSelect, dateInput].forEach(
     (field) => {
       field.addEventListener('input', () => clearFieldError(field));
       field.addEventListener('change', () => clearFieldError(field));
@@ -540,66 +536,112 @@ function initOrderFormValidation() {
 
 
 /* ============================================================================
-   9. ORDER SUMMARY (live update) + QUANTITY STEPPER
+   9. ORDER SUMMARY (live update) + PER-PRODUCT QUANTITY STEPPERS
    Required HTML (already on order.html):
-     - input[name="bottle"] (radio group)
-     - #qtyMinus, #qtyInput, #qtyPlus
+     - .product-qty-card elements, each with:
+         data-product="19L Bottle"  (display name used in the summary)
+         data-price="80"            (price per unit, used for the total)
+         .product-qty-input          (the number input, starts at 0)
+         [data-action="minus"] / [data-action="plus"] buttons inside
      - #of-area (select)
-     - #summaryProduct, #summaryQty, #summaryArea (the display spans)
+     - #summaryItems, #summaryArea, #summarySubtotal, #summaryDelivery,
+       #summaryTotal (the display elements in the Order Summary card)
    Behavior:
-     - The [-] and [+] buttons actually change the quantity now.
-     - Any change to bottle size, quantity, or area instantly updates
-       the Order Summary card.
+     - Each product card has its own independent [-] / [+] stepper, so a
+       customer can order multiple sizes in the same order (e.g. 3× 19L
+       AND 10× 500ml together).
+     - Any change to quantity or delivery area instantly recalculates:
+         Subtotal        = sum of (price × quantity) for every product
+         Delivery Charge = flat Rs. 50, waived once subtotal reaches Rs. 1000
+                            (placeholder policy — easy to change below)
+         Net Total        = Subtotal + Delivery Charge
    ============================================================================ */
 
-// Declared outside the function so initOrderFormValidation() can call it
-// after form.reset() without needing to re-select every element again.
-function updateOrderSummary() {
-  const summaryProduct = document.getElementById('summaryProduct');
-  const summaryQty = document.getElementById('summaryQty');
-  const summaryArea = document.getElementById('summaryArea');
-  if (!summaryProduct || !summaryQty || !summaryArea) return;
+// Flat delivery fee and the free-delivery threshold.
+// These are placeholder values — update them to match the real policy.
+const DELIVERY_CHARGE = 50;
+const FREE_DELIVERY_THRESHOLD = 1000;
 
-  const checkedBottle = document.querySelector('input[name="bottle"]:checked');
-  const qtyInput = document.getElementById('qtyInput');
+// Declared outside the init function so initOrderFormValidation() can call
+// it after form.reset() without needing to re-select every element again.
+function updateOrderSummary() {
+  const summaryItems = document.getElementById('summaryItems');
+  const summaryArea = document.getElementById('summaryArea');
+  const summarySubtotal = document.getElementById('summarySubtotal');
+  const summaryDelivery = document.getElementById('summaryDelivery');
+  const summaryTotal = document.getElementById('summaryTotal');
+  if (!summaryItems || !summarySubtotal) return; // not on this page
+
+  const productCards = document.querySelectorAll('.product-qty-card');
   const areaSelect = document.getElementById('of-area');
 
-  summaryProduct.textContent = checkedBottle ? `${checkedBottle.value} Bottle` : '—';
-  summaryQty.textContent = qtyInput ? qtyInput.value : '—';
+  let subtotal = 0;
+  let itemsHtml = '';
+
+  productCards.forEach((card) => {
+    const input = card.querySelector('.product-qty-input');
+    const quantity = parseInt(input.value, 10) || 0;
+    const price = parseInt(card.dataset.price, 10) || 0;
+    const productName = card.dataset.product;
+
+    // Highlight the card while it has a quantity selected.
+    card.classList.toggle('active', quantity > 0);
+
+    if (quantity > 0) {
+      const lineTotal = price * quantity;
+      subtotal += lineTotal;
+
+      itemsHtml += `
+        <div class="summary-item-row">
+          <span class="summary-item-name">${productName} × ${quantity}</span>
+          <span>Rs. ${lineTotal}</span>
+        </div>
+      `;
+    }
+  });
+
+  // Show a friendly empty state if nothing has been selected yet.
+  summaryItems.innerHTML = itemsHtml || '<p class="summary-empty">No products selected yet.</p>';
+
+  const deliveryCharge = subtotal === 0 || subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
+  const total = subtotal + deliveryCharge;
+
+  summarySubtotal.textContent = `Rs. ${subtotal}`;
+  summaryDelivery.textContent = deliveryCharge === 0 ? 'Free' : `Rs. ${deliveryCharge}`;
+  summaryTotal.textContent = `Rs. ${total}`;
   summaryArea.textContent = areaSelect && areaSelect.value !== '' ? areaSelect.value : '—';
 }
 
 function initOrderSummary() {
-  const qtyInput = document.getElementById('qtyInput');
-  const qtyMinus = document.getElementById('qtyMinus');
-  const qtyPlus = document.getElementById('qtyPlus');
+  const productCards = document.querySelectorAll('.product-qty-card');
   const areaSelect = document.getElementById('of-area');
-  const bottleRadios = document.querySelectorAll('input[name="bottle"]');
 
   // If the order form isn't on this page, there's nothing to wire up.
-  if (!qtyInput || !qtyMinus || !qtyPlus) return;
+  if (productCards.length === 0) return;
 
-  const MIN_QTY = parseInt(qtyInput.min, 10) || 1;
-  const MAX_QTY = parseInt(qtyInput.max, 10) || 50;
+  productCards.forEach((card) => {
+    const input = card.querySelector('.product-qty-input');
+    const minusBtn = card.querySelector('[data-action="minus"]');
+    const plusBtn = card.querySelector('[data-action="plus"]');
 
-  qtyMinus.addEventListener('click', () => {
-    const currentValue = parseInt(qtyInput.value, 10) || MIN_QTY;
-    if (currentValue > MIN_QTY) {
-      qtyInput.value = currentValue - 1;
-      updateOrderSummary();
-    }
-  });
+    const MIN_QTY = parseInt(input.min, 10) || 0;
+    const MAX_QTY = parseInt(input.max, 10) || 50;
 
-  qtyPlus.addEventListener('click', () => {
-    const currentValue = parseInt(qtyInput.value, 10) || MIN_QTY;
-    if (currentValue < MAX_QTY) {
-      qtyInput.value = currentValue + 1;
-      updateOrderSummary();
-    }
-  });
+    minusBtn.addEventListener('click', () => {
+      const currentValue = parseInt(input.value, 10) || MIN_QTY;
+      if (currentValue > MIN_QTY) {
+        input.value = currentValue - 1;
+        updateOrderSummary();
+      }
+    });
 
-  bottleRadios.forEach((radio) => {
-    radio.addEventListener('change', updateOrderSummary);
+    plusBtn.addEventListener('click', () => {
+      const currentValue = parseInt(input.value, 10) || MIN_QTY;
+      if (currentValue < MAX_QTY) {
+        input.value = currentValue + 1;
+        updateOrderSummary();
+      }
+    });
   });
 
   if (areaSelect) {

@@ -245,7 +245,7 @@
     align-self: stretch;
   }
 
-  .bottle-options {
+  .product-qty-grid {
     grid-template-columns: 1fr;
   }
 
