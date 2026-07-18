@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Water | EverPure Drinking Water</title>
+  <meta name="description" content="Order fresh, purified drinking water from EverPure — delivered to your home or office in Rawalpindi & Islamabad.">
+
+  <link rel="icon" href="assets/logo/logo.png" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- ===================== HEADER / NAV ===================== -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+
+      <a href="index.html" class="logo">
+        <img src="assets/logo/logo.png" alt="EverPure Drinking Water logo" width="48" height="48">
+        <span class="logo-text">EverPure</span>
+      </a>
+
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="service-areas.html">Service Areas</a></li>
+          <li><a href="process.html">Our Process</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="faq.html">FAQs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="order.html" class="btn btn-primary">Order Now</a>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainNav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Place Your Order</span>
+        <h1>Order Water</h1>
+        <p class="process-hero-sub">
+          Fresh, purified drinking water delivered to your home or office.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== ORDER FORM ===================== -->
+    <section class="order-section">
+      <div class="container order-grid">
+
+        <!-- No backend yet — action/method to be wired up once you have a server endpoint -->
+        <form class="order-form" id="orderForm" action="#" method="POST">
+
+          <!-- ---------- Customer Information ---------- -->
+          <div class="order-block">
+            <h2 class="order-block-title">Customer Information</h2>
+
+            <label for="of-name">Full Name</label>
+            <input type="text" id="of-name" name="name" placeholder="Your full name" required>
+
+            <label for="of-phone">Phone Number</label>
+            <input type="tel" id="of-phone" name="phone" placeholder="03XX-XXXXXXX" required>
+
+            <label for="of-email">Email (Optional)</label>
+            <input type="email" id="of-email" name="email" placeholder="you@example.com">
+
+            <label for="of-address">Delivery Address</label>
+            <textarea id="of-address" name="address" rows="3" placeholder="House / street / area" required></textarea>
+          </div>
+
+          <!-- ---------- Choose Products ---------- -->
+          <div class="order-block">
+            <h2 class="order-block-title">Choose Products</h2>
+            <p class="order-block-hint">Mix and match — set a quantity for any size you'd like.</p>
+
+            <!-- Each card is its own product with its own quantity stepper.
+                 data-price is used by script.js to calculate the order total. -->
+            <div class="product-qty-grid" id="productQtyGrid">
+
+              <div class="product-qty-card" data-product="19L Bottle" data-price="80">
+                <span class="bottle-size">19L</span>
+                <span class="bottle-label">Bottle</span>
+                <span class="product-qty-price">Rs. 80 each</span>
+                <div class="qty-stepper qty-stepper--sm">
+                  <button type="button" class="qty-btn" data-action="minus" aria-label="Decrease 19L bottle quantity">&minus;</button>
+                  <input type="number" class="product-qty-input" id="qty19L" value="0" min="0" max="50" readonly>
+                  <button type="button" class="qty-btn" data-action="plus" aria-label="Increase 19L bottle quantity">&plus;</button>
+                </div>
+              </div>
+
+              <div class="product-qty-card" data-product="1.5L Bottle" data-price="60">
+                <span class="bottle-size">1.5L</span>
+                <span class="bottle-label">Bottle</span>
+                <span class="product-qty-price">Rs. 60 each</span>
+                <div class="qty-stepper qty-stepper--sm">
+                  <button type="button" class="qty-btn" data-action="minus" aria-label="Decrease 1.5L bottle quantity">&minus;</button>
+                  <input type="number" class="product-qty-input" id="qty15L" value="0" min="0" max="50" readonly>
+                  <button type="button" class="qty-btn" data-action="plus" aria-label="Increase 1.5L bottle quantity">&plus;</button>
+                </div>
+              </div>
+
+              <div class="product-qty-card" data-product="500ml Bottle" data-price="40">
+                <span class="bottle-size">500ml</span>
+                <span class="bottle-label">Bottle</span>
+                <span class="product-qty-price">Rs. 40 each</span>
+                <div class="qty-stepper qty-stepper--sm">
+                  <button type="button" class="qty-btn" data-action="minus" aria-label="Decrease 500ml bottle quantity">&minus;</button>
+                  <input type="number" class="product-qty-input" id="qty500ml" value="0" min="0" max="50" readonly>
+                  <button type="button" class="qty-btn" data-action="plus" aria-label="Increase 500ml bottle quantity">&plus;</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ---------- Choose Area ---------- -->
+          <div class="order-block">
+            <h2 class="order-block-title">Choose Area</h2>
+
+            <select id="of-area" name="area" required>
+              <option value="" disabled selected>Select your area</option>
+              <option value="Rawalpindi">Rawalpindi</option>
+              <option value="Islamabad">Islamabad</option>
+            </select>
+          </div>
+
+          <!-- ---------- Delivery Date ---------- -->
+          <div class="order-block">
+            <h2 class="order-block-title">Preferred Delivery Date</h2>
+            <input type="date" id="of-date" name="deliveryDate" required>
+          </div>
+
+          <!-- ---------- Time Slot ---------- -->
+          <div class="order-block">
+            <h2 class="order-block-title">Preferred Time</h2>
+
+            <div class="timeslot-options">
+              <label class="timeslot-option">
+                <input type="radio" name="timeslot" value="Morning" checked>
+                <span>Morning</span>
+              </label>
+              <label class="timeslot-option">
+                <input type="radio" name="timeslot" value="Afternoon">
+                <span>Afternoon</span>
+              </label>
+              <label class="timeslot-option">
+                <input type="radio" name="timeslot" value="Evening">
+                <span>Evening</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- ---------- Notes ---------- -->
+          <div class="order-block">
+            <h2 class="order-block-title">Any Notes?</h2>
+            <textarea id="of-notes" name="notes" rows="3" placeholder="Please call before arrival."></textarea>
+          </div>
+
+        </form>
+
+        <!-- ===================== ORDER SUMMARY (sticky) ===================== -->
+        <aside class="order-summary">
+          <h2 class="order-block-title">Order Summary</h2>
+
+          <!-- script.js fills this with one row per product that has a quantity > 0 -->
+          <div class="summary-items" id="summaryItems">
+            <p class="summary-empty">No products selected yet.</p>
+          </div>
+
+          <div class="hours-row">
+            <span>Delivery Area</span>
+            <span id="summaryArea">—</span>
+          </div>
+          <div class="hours-row">
+            <span>Subtotal</span>
+            <span id="summarySubtotal">Rs. 0</span>
+          </div>
+          <div class="hours-row">
+            <span>Delivery Charges</span>
+            <span id="summaryDelivery">Rs. 0</span>
+          </div>
+          <div class="hours-row summary-total-row">
+            <span>Net Total</span>
+            <span id="summaryTotal">Rs. 0</span>
+          </div>
+
+          <button type="submit" form="orderForm" class="btn btn-primary btn-lg order-submit">Place Order</button>
+
+          <div class="urgent-box">
+            <h3>Need Water Urgently?</h3>
+            <div class="urgent-actions">
+              <a href="tel:+923361115858" class="btn btn-outline">📞 Call Us</a>
+              <a href="https://wa.me/923361115858" target="_blank" rel="noopener" class="btn btn-outline">💬 WhatsApp Us</a>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <img src="assets/logo/logo.png" alt="EverPure Drinking Water logo" width="48" height="48">
+          <span class="logo-text">EverPure</span>
+        </a>
+        <p>Pure drinking water, delivered across Pakistan.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="process.html">Our Process</a></li>
+          <li><a href="service-areas.html">Service Areas</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="faq.html">FAQs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="order.html">Order Now</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-contact">
+        <h4>Get in Touch</h4>
+        <p>📞 +92 336-1115858</p>
+        <p>✉️ everpure@gmail.com</p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; <span id="year">2026</span> EverPure Drinking Water. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
