@@ -16,6 +16,10 @@ const app = express();
 // Define the port number our server will listen on.
 const PORT = 3000;
 
+// Parse incoming JSON request bodies.
+// Without this, req.body will be undefined for POST requests.
+app.use(express.json());
+
 // Tell the app to use our router for handling incoming requests.
 app.use('/', indexRoutes);
 

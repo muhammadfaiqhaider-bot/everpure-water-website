@@ -7,9 +7,15 @@ const router = express.Router();
 // Import the controller functions from indexController.js.
 const indexController = require('../controllers/indexController');
 
+// Import the controller functions from orderController.js.
+const orderController = require('../controllers/orderController');
+
 // Define the GET route for the homepage ("/").
-// Instead of writing the logic here, we just point to the controller function.
 router.get('/', indexController.getHome);
+
+// Define the POST route for creating a new order.
+// When a POST request hits /api/orders, orderController.createOrder runs.
+router.post('/api/orders', orderController.createOrder);
 
 // Export this router so server.js can import and use it.
 module.exports = router;
