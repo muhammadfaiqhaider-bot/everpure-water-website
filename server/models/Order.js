@@ -37,22 +37,20 @@ const orderSchema = new mongoose.Schema(
     // periods unless quoted).
 
     // Number of 19L bottles ordered.
-    bottle19L: {
-      type: Number,
-      default: 0,
-    },
+   bottle19L: {
+    type: Number,
+    default: 0,
+},
 
-    // Number of 1.5L (6-bottle pack) units ordered.
-    '1.5L 6 bottle pack': {
-      type: Number,
-      default: 0,
-    },
+bottle1_5L: {
+    type: Number,
+    default: 0,
+},
 
-    // Number of 500ml (12-bottle pack) units ordered.
-    '500ml 12 bottle pack': {
-      type: Number,
-      default: 0,
-    },
+bottle500ml: {
+    type: Number,
+    default: 0,
+},
 
     // ---------------- Delivery ----------------
 
