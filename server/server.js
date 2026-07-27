@@ -1,6 +1,6 @@
 // Import the Express library so we can use its features in this file.
 const express = require('express');
-
+const cors = require("cors");
 // Import our router from routes/index.js.
 const indexRoutes = require('./routes/index');
 
@@ -12,7 +12,7 @@ connectDB();
 
 // Create an Express application. This "app" object represents our server.
 const app = express();
-
+app.use(cors());
 // Define the port number our server will listen on.
 const PORT = 3000;
 
