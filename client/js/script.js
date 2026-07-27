@@ -345,6 +345,79 @@ function showSuccessMessage(referenceEl, message) {
   setTimeout(() => successBox.remove(), 6000);
 }
 
+// ---------------------------------------------------------------------------
+// NEW: Shows a custom error banner (same visual pattern as showSuccessMessage,
+// but red/failure themed) for when the fetch() to the backend fails.
+// ---------------------------------------------------------------------------
+function showSubmissionError(referenceEl, message) {
+  const existing = referenceEl.parentElement.querySelector('.js-submission-error');
+  if (existing) existing.remove();
+
+  const errorBox = document.createElement('div');
+  errorBox.className = 'js-submission-error';
+  errorBox.textContent = message;
+  errorBox.style.cssText = `
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+    font-weight: 600;
+    font-size: 0.9rem;
+  `;
+
+  referenceEl.insertAdjacentElement('afterend', errorBox);
+
+  setTimeout(() => errorBox.remove(), 6000);
+}
+
+// ---------------------------------------------------------------------------
+// NEW: Reads the quantity for one product card using its data-field attribute
+// (added in order.html) — this maps each card to the exact Mongoose schema
+// field name (bottle19L, bottle1_5L, bottle500ml) instead of guessing from
+// the display text in data-product.
+// ---------------------------------------------------------------------------
+function getProductQuantity(fieldName) {
+  const card = document.querySelector(`.product-qty-card[data-field="${fieldName}"]`);
+  if (!card) return 0; // card missing on this page — fail safe, don't crash
+  const input = card.querySelector('.product-qty-input');
+  return parseInt(input.value, 10) || 0;
+}
+
+// ---------------------------------------------------------------------------
+// NEW: Sends the validated order to the Express backend and handles the
+// success/failure UI. Kept as its own function so initOrderFormValidation()
+// stays readable.
+// ---------------------------------------------------------------------------
+async function submitOrderToBackend(orderData, form, submitButton) {
+  try {
+    const response = await fetch('http://localhost:3000/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status}`);
+    }
+
+    // Success — reuse the existing success message + reset logic.
+    showSuccessMessage(
+      submitButton,
+      'Thank you! Your order has been received. Our team will confirm delivery shortly.'
+    );
+    form.reset();
+    updateOrderSummary(); // reset the summary box back to defaults too
+  } catch (error) {
+    console.error('Order submission failed:', error);
+    showSubmissionError(
+      submitButton,
+      "Sorry, we couldn't place your order. Please check your internet connection and try again."
+    );
+  }
+}
+
 
 /* ============================================================================
    7. CONTACT FORM VALIDATION
@@ -436,7 +509,9 @@ function initOrderFormValidation() {
   const areaSelect = form.querySelector('#of-area');
   const dateInput = form.querySelector('#of-date');
 
-  form.addEventListener('submit', (event) => {
+  // CHANGED: this listener is now async so it can await the fetch() call
+  // inside submitOrderToBackend().
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
     let isFormValid = true;
 
@@ -514,15 +589,28 @@ function initOrderFormValidation() {
 
     if (!isFormValid) return;
 
-    // No backend exists yet — this is where a real fetch()/POST would go.
     const submitButton = document.querySelector('.order-submit');
-    showSuccessMessage(
-      submitButton,
-      'Thank you! Your order has been received. Our team will confirm delivery shortly.'
-    );
+    const notesInput = form.querySelector('#of-notes');
 
-    form.reset();
-    updateOrderSummary(); // reset the summary box back to defaults too
+    // NEW: Build the order object to match the Mongoose schema exactly.
+    // Field names (bottle19L, bottle1_5L, bottle500ml) come from the
+    // data-field attribute on each .product-qty-card in order.html.
+    const orderData = {
+      fullName: nameInput.value.trim(),
+      phone: phoneInput.value.trim(),
+      email: emailInput.value.trim(),
+      address: addressInput.value.trim(),
+      bottle19L: getProductQuantity('bottle19L'),
+      bottle1_5L: getProductQuantity('bottle1_5L'),
+      bottle500ml: getProductQuantity('bottle500ml'),
+      deliveryArea: areaSelect.value,
+      deliveryDate: dateInput.value,
+      deliveryTime: timeslotChecked.value,
+      notes: notesInput ? notesInput.value.trim() : '',
+    };
+
+    // NEW: Send it to the backend instead of the old placeholder comment.
+    await submitOrderToBackend(orderData, form, submitButton);
   });
 
   // Clear errors as the person fixes each field.

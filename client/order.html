@@ -68,7 +68,9 @@
     <section class="order-section">
       <div class="container order-grid">
 
-        <!-- No backend yet — action/method to be wired up once you have a server endpoint -->
+        <!-- Backend is live at POST http://localhost:3000/api/orders — script.js
+             intercepts this submit via preventDefault() and sends fetch() instead,
+             so action/method here are just a harmless fallback. -->
         <form class="order-form" id="orderForm" action="#" method="POST">
 
           <!-- ---------- Customer Information ---------- -->
@@ -94,10 +96,13 @@
             <p class="order-block-hint">Mix and match — set a quantity for any size you'd like.</p>
 
             <!-- Each card is its own product with its own quantity stepper.
-                 data-price is used by script.js to calculate the order total. -->
+                 data-price is used by script.js to calculate the order total.
+                 data-field maps this card to the exact Mongoose schema field
+                 name (bottle19L / bottle1_5L / bottle500ml) so the order
+                 payload sent to the backend matches the Order model exactly. -->
             <div class="product-qty-grid" id="productQtyGrid">
 
-              <div class="product-qty-card" data-product="19L Bottle" data-price="80">
+              <div class="product-qty-card" data-product="19L Bottle" data-price="80" data-field="bottle19L">
                 <span class="bottle-size">19L</span>
                 <span class="bottle-label">Bottle</span>
                 <span class="product-qty-price">Rs. 250 each</span>
@@ -108,7 +113,7 @@
                 </div>
               </div>
 
-              <div class="product-qty-card" data-product="1.5L Bottle" data-price="60">
+              <div class="product-qty-card" data-product="1.5L Bottle" data-price="60" data-field="bottle1_5L">
                 <span class="bottle-size">1.5L</span>
                 <span class="bottle-label">6 Bottle Pack</span>
                 <span class="product-qty-price">Rs. 350 each</span>
@@ -119,7 +124,7 @@
                 </div>
               </div>
 
-              <div class="product-qty-card" data-product="500ml Bottle" data-price="40">
+              <div class="product-qty-card" data-product="500ml Bottle" data-price="40" data-field="bottle500ml">
                 <span class="bottle-size">500ml</span>
                 <span class="bottle-label">12 Bottle Pack</span>
                 <span class="product-qty-price">Rs. 350 each</span>
