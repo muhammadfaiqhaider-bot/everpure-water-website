@@ -69,5 +69,36 @@ const newOrder = new Order({
   }
 };
 
-// Export this function so routes/index.js can import and use it.
-module.exports = { createOrder };
+// This function handles retrieving all orders from MongoDB.
+// It is used by the Admin Dashboard to show the full list of orders.
+const getAllOrders = async (req, res) => {
+  // try/catch lets us handle a successful database fetch and a failed one separately.
+  try {
+    // Find every order in the database.
+    // The sort() call puts the newest orders first by using the createdAt field.
+    const orders = await Order.find().sort({ createdAt: -1 });
+
+    // If the database query succeeds, send back a 200 status code.
+    // The response includes the total number of orders and the full orders array.
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+  } catch (error) {
+    // If anything above throws an error, log it to the terminal.
+    console.log(error);
+
+    // Send back a 500 status code when the server cannot fetch the orders.
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch orders.',
+    });
+  }
+};
+
+// Export these functions so routes/index.js can import and use them.
+module.exports = {
+  createOrder,
+  getAllOrders,
+};

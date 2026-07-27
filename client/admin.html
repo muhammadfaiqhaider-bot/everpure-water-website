@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EverPure Admin Dashboard</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <!-- ===================== TOP NAVBAR ===================== -->
+    <header class="topbar">
+      <div class="brand-block">
+        <h1>EverPure Admin</h1>
+        <p>Delivery operations dashboard</p>
+      </div>
+
+      <div class="topbar-stats">
+        <div class="stat-pill">
+          <span class="stat-label">Current Date</span>
+          <span class="stat-value" id="currentDate">—</span>
+        </div>
+
+        <div class="stat-pill">
+          <span class="stat-label">Total Orders</span>
+          <span class="stat-value" id="totalOrders">0</span>
+        </div>
+
+        <div class="stat-pill">
+          <span class="stat-label">Pending Orders</span>
+          <span class="stat-value" id="pendingOrders">0</span>
+        </div>
+
+        <div class="stat-pill">
+          <span class="stat-label">Today's Deliveries</span>
+          <span class="stat-value" id="todayDeliveries">0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="dashboard-content">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Live Delivery Queue</h2>
+            <p>Monitor upcoming deliveries with a premium logistics-style overview.</p>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <label class="toolbar-field">
+            <span>Search by customer name</span>
+            <input type="text" placeholder="Search customer">
+          </label>
+
+          <label class="toolbar-field">
+            <span>Search by phone</span>
+            <input type="text" placeholder="Search phone">
+          </label>
+
+          <label class="toolbar-field">
+            <span>Filter by status</span>
+            <select>
+              <option>All Status</option>
+              <option>Pending</option>
+              <option>Processing</option>
+              <option>Delivered</option>
+            </select>
+          </label>
+
+          <label class="toolbar-field">
+            <span>Sort by</span>
+            <select>
+              <option>Newest</option>
+              <option>Oldest</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="orders-list">
+          <article class="order-card expanded">
+            <div class="order-card__header">
+              <div>
+                <h3>Ali Khan</h3>
+                <div class="meta-row">
+                  <span class="order-id">Order #EW-1042</span>
+                  <span class="meta-pill">30 Jul 2026</span>
+                  <span class="meta-pill">Morning</span>
+                </div>
+              </div>
+
+              <div class="order-card__header-actions">
+                <span class="status-badge pending">Pending</span>
+                <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
+              </div>
+            </div>
+
+            <div class="order-card__body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">📞 Phone</span>
+                  <span class="info-value">0300-1234567</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📧 Email</span>
+                  <span class="info-value">ali.khan@email.com</span>
+                </div>
+              </div>
+
+              <div class="address-block">
+                <span class="address-icon">📍</span>
+                <div>
+                  <h4>Full Delivery Address</h4>
+                  <p>House 18, Street 4, Gulshan Colony, Rawalpindi</p>
+                </div>
+              </div>
+
+              <div class="product-section">
+                <h4>Order Details</h4>
+                <div class="product-badges">
+                  <span class="product-badge">19L Bottle × 2</span>
+                  <span class="product-badge">1.5L Bottle × 1</span>
+                </div>
+              </div>
+
+              <div class="notes-block">
+                <h4>💬 Customer Notes</h4>
+                <p>Please ring the bell before arrival.</p>
+              </div>
+
+              <div class="card-actions">
+                <button type="button" class="action-btn view-btn">View</button>
+                <button type="button" class="action-btn delivered-btn">Mark Delivered</button>
+                <button type="button" class="action-btn delete-btn">Delete</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="order-card expanded">
+            <div class="order-card__header">
+              <div>
+                <h3>Sara Ahmed</h3>
+                <div class="meta-row">
+                  <span class="order-id">Order #EW-1047</span>
+                  <span class="meta-pill">01 Aug 2026</span>
+                  <span class="meta-pill">Afternoon</span>
+                </div>
+              </div>
+
+              <div class="order-card__header-actions">
+                <span class="status-badge processing">Processing</span>
+                <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
+              </div>
+            </div>
+
+            <div class="order-card__body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">📞 Phone</span>
+                  <span class="info-value">0312-9876543</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📧 Email</span>
+                  <span class="info-value">sara.ahmed@email.com</span>
+                </div>
+              </div>
+
+              <div class="address-block">
+                <span class="address-icon">📍</span>
+                <div>
+                  <h4>Full Delivery Address</h4>
+                  <p>Flat 6, Blue Area Apartments, Islamabad</p>
+                </div>
+              </div>
+
+              <div class="product-section">
+                <h4>Order Details</h4>
+                <div class="product-badges">
+                  <span class="product-badge">1.5L Bottle × 3</span>
+                  <span class="product-badge">500ml Bottle × 2</span>
+                </div>
+              </div>
+
+              <div class="notes-block">
+                <h4>💬 Customer Notes</h4>
+                <p>No special instructions.</p>
+              </div>
+
+              <div class="card-actions">
+                <button type="button" class="action-btn view-btn">View</button>
+                <button type="button" class="action-btn delivered-btn">Mark Delivered</button>
+                <button type="button" class="action-btn delete-btn">Delete</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="order-card expanded">
+            <div class="order-card__header">
+              <div>
+                <h3>Hassan Raza</h3>
+                <div class="meta-row">
+                  <span class="order-id">Order #EW-1051</span>
+                  <span class="meta-pill">03 Aug 2026</span>
+                  <span class="meta-pill">Evening</span>
+                </div>
+              </div>
+
+              <div class="order-card__header-actions">
+                <span class="status-badge delivered">Delivered</span>
+                <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
+              </div>
+            </div>
+
+            <div class="order-card__body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">📞 Phone</span>
+                  <span class="info-value">0345-5544332</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📧 Email</span>
+                  <span class="info-value">hassan.raza@email.com</span>
+                </div>
+              </div>
+
+              <div class="address-block">
+                <span class="address-icon">📍</span>
+                <div>
+                  <h4>Full Delivery Address</h4>
+                  <p>Plot 12, Sector F, DHA Phase 2, Islamabad</p>
+                </div>
+              </div>
+
+              <div class="product-section">
+                <h4>Order Details</h4>
+                <div class="product-badges">
+                  <span class="product-badge">19L Bottle × 4</span>
+                  <span class="product-badge">500ml Bottle × 6</span>
+                </div>
+              </div>
+
+              <div class="notes-block">
+                <h4>💬 Customer Notes</h4>
+                <p>Delivered to the reception desk.</p>
+              </div>
+
+              <div class="card-actions">
+                <button type="button" class="action-btn view-btn">View</button>
+                <button type="button" class="action-btn delivered-btn">Mark Delivered</button>
+                <button type="button" class="action-btn delete-btn">Delete</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="order-card expanded">
+            <div class="order-card__header">
+              <div>
+                <h3>Muneeb Shah</h3>
+                <div class="meta-row">
+                  <span class="order-id">Order #EW-1056</span>
+                  <span class="meta-pill">05 Aug 2026</span>
+                  <span class="meta-pill">Evening</span>
+                </div>
+              </div>
+
+              <div class="order-card__header-actions">
+                <span class="status-badge pending">Pending</span>
+                <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
+              </div>
+            </div>
+
+            <div class="order-card__body">
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">📞 Phone</span>
+                  <span class="info-value">0321-4455667</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">📧 Email</span>
+                  <span class="info-value">muneeb.shah@email.com</span>
+                </div>
+              </div>
+
+              <div class="address-block">
+                <span class="address-icon">📍</span>
+                <div>
+                  <h4>Full Delivery Address</h4>
+                  <p>House 23, Road 7, Peshawar Road, Rawalpindi</p>
+                </div>
+              </div>
+
+              <div class="product-section">
+                <h4>Order Details</h4>
+                <div class="product-badges">
+                  <span class="product-badge">19L Bottle × 1</span>
+                  <span class="product-badge">500ml Bottle × 4</span>
+                </div>
+              </div>
+
+              <div class="notes-block">
+                <h4>💬 Customer Notes</h4>
+                <p>No special instructions.</p>
+              </div>
+
+              <div class="card-actions">
+                <button type="button" class="action-btn view-btn">View</button>
+                <button type="button" class="action-btn delivered-btn">Mark Delivered</button>
+                <button type="button" class="action-btn delete-btn">Delete</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

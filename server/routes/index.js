@@ -13,6 +13,10 @@ const orderController = require('../controllers/orderController');
 // Define the GET route for the homepage ("/").
 router.get('/', indexController.getHome);
 
+// Define the GET route for retrieving all orders.
+// When a GET request hits /api/orders, orderController.getAllOrders runs.
+router.get('/api/orders', orderController.getAllOrders);
+
 // Define the POST route for creating a new order.
 // When a POST request hits /api/orders, orderController.createOrder runs.
 router.post('/api/orders', orderController.createOrder);

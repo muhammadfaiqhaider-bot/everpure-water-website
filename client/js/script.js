@@ -386,6 +386,40 @@ function getProductQuantity(fieldName) {
 }
 
 // ---------------------------------------------------------------------------
+// NEW: Updates the order submit button to show a busy state while the
+// request is in progress. This keeps the UI clear and prevents repeated
+// clicks while the backend is still processing the submission.
+// ---------------------------------------------------------------------------
+function setOrderButtonState(button, isSubmitting) {
+  if (!button) return;
+
+  button.disabled = isSubmitting;
+  button.textContent = isSubmitting ? 'Submitting...' : 'Place Order';
+}
+
+// ---------------------------------------------------------------------------
+// NEW: Resets the order form and summary after a successful submission so
+// the user can place another order without leaving stale values behind.
+// ---------------------------------------------------------------------------
+function resetOrderFormState(form, submitButton) {
+  if (!form) return;
+
+  form.reset();
+
+  const quantityInputs = form.querySelectorAll('.product-qty-input');
+  quantityInputs.forEach((input) => {
+    input.value = '0';
+  });
+
+  document.querySelectorAll('.product-qty-card').forEach((card) => {
+    card.classList.remove('active');
+  });
+
+  updateOrderSummary();
+  setOrderButtonState(submitButton, false);
+}
+
+// ---------------------------------------------------------------------------
 // NEW: Sends the validated order to the Express backend and handles the
 // success/failure UI. Kept as its own function so initOrderFormValidation()
 // stays readable.
@@ -402,13 +436,12 @@ async function submitOrderToBackend(orderData, form, submitButton) {
       throw new Error(`Server responded with status ${response.status}`);
     }
 
-    // Success — reuse the existing success message + reset logic.
+    // Success — show a polished confirmation and reset the whole order UI.
     showSuccessMessage(
       submitButton,
       'Thank you! Your order has been received. Our team will confirm delivery shortly.'
     );
-    form.reset();
-    updateOrderSummary(); // reset the summary box back to defaults too
+    resetOrderFormState(form, submitButton);
   } catch (error) {
     console.error('Order submission failed:', error);
     showSubmissionError(
@@ -508,6 +541,7 @@ function initOrderFormValidation() {
   const addressInput = form.querySelector('#of-address');
   const areaSelect = form.querySelector('#of-area');
   const dateInput = form.querySelector('#of-date');
+  let isSubmitting = false;
 
   // CHANGED: this listener is now async so it can await the fetch() call
   // inside submitOrderToBackend().
@@ -592,6 +626,11 @@ function initOrderFormValidation() {
     const submitButton = document.querySelector('.order-submit');
     const notesInput = form.querySelector('#of-notes');
 
+    if (isSubmitting) return;
+
+    isSubmitting = true;
+    setOrderButtonState(submitButton, true);
+
     // NEW: Build the order object to match the Mongoose schema exactly.
     // Field names (bottle19L, bottle1_5L, bottle500ml) come from the
     // data-field attribute on each .product-qty-card in order.html.
@@ -609,8 +648,13 @@ function initOrderFormValidation() {
       notes: notesInput ? notesInput.value.trim() : '',
     };
 
-    // NEW: Send it to the backend instead of the old placeholder comment.
-    await submitOrderToBackend(orderData, form, submitButton);
+    try {
+      // NEW: Send it to the backend instead of the old placeholder comment.
+      await submitOrderToBackend(orderData, form, submitButton);
+    } finally {
+      isSubmitting = false;
+      setOrderButtonState(submitButton, false);
+    }
   });
 
   // Clear errors as the person fixes each field.
