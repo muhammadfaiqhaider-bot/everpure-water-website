@@ -51,29 +51,29 @@
         <div class="toolbar">
           <label class="toolbar-field">
             <span>Search by customer name</span>
-            <input type="text" placeholder="Search customer">
+            <input id="customerSearch" type="text" placeholder="Search customer">
           </label>
 
           <label class="toolbar-field">
             <span>Search by phone</span>
-            <input type="text" placeholder="Search phone">
+            <input id="phoneSearch" type="text" placeholder="Search phone">
           </label>
 
           <label class="toolbar-field">
             <span>Filter by status</span>
-            <select>
-              <option>All Status</option>
-              <option>Pending</option>
-              <option>Processing</option>
-              <option>Delivered</option>
+            <select id="statusFilter">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="delivered">Delivered</option>
             </select>
           </label>
 
           <label class="toolbar-field">
             <span>Sort by</span>
-            <select>
-              <option>Newest</option>
-              <option>Oldest</option>
+            <select id="sortOrder">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
             </select>
           </label>
         </div>

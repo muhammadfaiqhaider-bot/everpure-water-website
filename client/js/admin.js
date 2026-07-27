@@ -8,7 +8,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalBackdrop = document.getElementById('orderModalBackdrop');
   const modalCloseButton = document.getElementById('orderModalClose');
   const modalContent = document.getElementById('orderModalContent');
+  const customerSearchInput = document.getElementById('customerSearch');
+  const phoneSearchInput = document.getElementById('phoneSearch');
+  const statusFilterSelect = document.getElementById('statusFilter');
+  const sortSelect = document.getElementById('sortOrder');
   let allOrders = [];
+  let viewHandlersBound = false;
+  const filters = {
+    searchTerm: '',
+    status: 'all',
+    sortBy: 'newest',
+  };
 
   if (dateElement) {
     const today = new Date();
@@ -59,6 +69,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (normalizedStatus === 'delivered') return 'delivered';
     if (normalizedStatus === 'processing') return 'processing';
     return 'pending';
+  };
+
+  // Normalize text so search filtering stays case-insensitive.
+  const normalizeText = (value) => String(value || '').trim().toLowerCase();
+
+  // Search across customer name, phone number, and delivery area.
+  const matchesSearchTerm = (order, searchTerm) => {
+    const normalizedSearchTerm = normalizeText(searchTerm);
+    if (!normalizedSearchTerm) return true;
+
+    const searchTerms = normalizedSearchTerm.split(/\s+/).filter(Boolean);
+    const searchableText = `${order.fullName || ''} ${order.phone || ''} ${order.deliveryArea || ''}`.toLowerCase();
+
+    return searchTerms.some((term) => searchableText.includes(term));
+  };
+
+  // Match the selected status filter without calling the backend again.
+  const matchesStatusFilter = (order, selectedStatus) => {
+    if (!selectedStatus || selectedStatus === 'all') return true;
+    return normalizeText(order.status) === normalizeText(selectedStatus);
+  };
+
+  // Sort the current list using the order creation timestamp.
+  const sortOrders = (orders, sortBy) => {
+    const sortedOrders = [...orders];
+
+    sortedOrders.sort((firstOrder, secondOrder) => {
+      const firstTime = new Date(firstOrder.createdAt || 0).getTime();
+      const secondTime = new Date(secondOrder.createdAt || 0).getTime();
+
+      if (sortBy === 'oldest') {
+        return firstTime - secondTime;
+      }
+
+      return secondTime - firstTime;
+    });
+
+    return sortedOrders;
+  };
+
+  // Combine search, filter, and sort from the already loaded orders array.
+  const getVisibleOrders = () => {
+    const filteredOrders = allOrders.filter((order) => {
+      return matchesSearchTerm(order, filters.searchTerm)
+        && matchesStatusFilter(order, filters.status);
+    });
+
+    return sortOrders(filteredOrders, filters.sortBy);
   };
 
   const formatDate = (value) => {
@@ -196,7 +254,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     ordersList.innerHTML = '';
 
     if (!orders.length) {
-      ordersList.innerHTML = '<div class="order-card"><p>No orders available.</p></div>';
+      const emptyMessage = allOrders.length ? 'No matching orders found.' : 'No orders available.';
+      ordersList.innerHTML = `<div class="order-card"><p>${emptyMessage}</p></div>`;
       return;
     }
 
@@ -327,7 +386,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const refreshOrderCardUI = () => {
     if (!ordersList) return;
 
-    renderOrders(allOrders);
+    const visibleOrders = getVisibleOrders();
+    renderOrders(visibleOrders);
     attachToggleHandlers();
     attachViewHandlers();
     attachDeliveredHandlers();
@@ -358,21 +418,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
+  const handleOrdersListClick = (event) => {
+    const viewButton = event.target.closest('.view-btn');
+    if (!viewButton) return;
+
+    const card = viewButton.closest('.order-card');
+    if (!card) return;
+
+    const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
+    if (selectedOrder) {
+      openOrderModal(selectedOrder);
+    }
+  };
+
   const attachViewHandlers = () => {
-    if (!ordersList) return;
+    if (!ordersList || viewHandlersBound) return;
 
-    ordersList.addEventListener('click', (event) => {
-      const viewButton = event.target.closest('.view-btn');
-      if (!viewButton) return;
-
-      const card = viewButton.closest('.order-card');
-      if (!card) return;
-
-      const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
-      if (selectedOrder) {
-        openOrderModal(selectedOrder);
-      }
-    });
+    ordersList.addEventListener('click', handleOrdersListClick);
+    viewHandlersBound = true;
   };
 
   const attachDeliveredHandlers = () => {
@@ -438,6 +501,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   };
 
+  const applyCurrentView = () => {
+    refreshOrderCardUI();
+  };
+
+  const attachFilterHandlers = () => {
+    if (customerSearchInput) {
+      customerSearchInput.addEventListener('input', () => {
+        filters.searchTerm = [customerSearchInput.value, phoneSearchInput ? phoneSearchInput.value : '']
+          .filter(Boolean)
+          .join(' ')
+          .trim();
+        applyCurrentView();
+      });
+    }
+
+    if (phoneSearchInput) {
+      phoneSearchInput.addEventListener('input', () => {
+        filters.searchTerm = [customerSearchInput ? customerSearchInput.value : '', phoneSearchInput.value]
+          .filter(Boolean)
+          .join(' ')
+          .trim();
+        applyCurrentView();
+      });
+    }
+
+    if (statusFilterSelect) {
+      statusFilterSelect.addEventListener('change', () => {
+        filters.status = statusFilterSelect.value || 'all';
+        applyCurrentView();
+      });
+    }
+
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => {
+        filters.sortBy = sortSelect.value || 'newest';
+        applyCurrentView();
+      });
+    }
+  };
+
   const loadOrders = async () => {
     if (!ordersList) return;
 
@@ -454,11 +557,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       allOrders = orders;
 
       updateDashboardStats(orders);
-      renderOrders(orders);
-      attachToggleHandlers();
-      attachViewHandlers();
-      attachDeliveredHandlers();
-      attachDeleteHandlers();
+      attachFilterHandlers();
+      refreshOrderCardUI();
     } catch (error) {
       console.error('Unable to load orders:', error);
       ordersList.innerHTML = '<div class="order-card"><p>Unable to load orders.</p></div>';
