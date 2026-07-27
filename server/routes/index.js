@@ -21,5 +21,13 @@ router.get('/api/orders', orderController.getAllOrders);
 // When a POST request hits /api/orders, orderController.createOrder runs.
 router.post('/api/orders', orderController.createOrder);
 
+// Define the PUT route for marking an order as delivered.
+// When a PUT request hits /api/orders/:id/delivered, orderController.markOrderAsDelivered runs.
+router.put('/api/orders/:id/delivered', orderController.markOrderAsDelivered);
+
+// Define the DELETE route for removing an order.
+// When a DELETE request hits /api/orders/:id, orderController.deleteOrder runs.
+router.delete('/api/orders/:id', orderController.deleteOrder);
+
 // Export this router so server.js can import and use it.
 module.exports = router;

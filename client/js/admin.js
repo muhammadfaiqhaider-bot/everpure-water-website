@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const pendingOrdersElement = document.getElementById('pendingOrders');
   const todayDeliveriesElement = document.getElementById('todayDeliveries');
   const ordersList = document.querySelector('.orders-list');
+  const modalBackdrop = document.getElementById('orderModalBackdrop');
+  const modalCloseButton = document.getElementById('orderModalClose');
+  const modalContent = document.getElementById('orderModalContent');
+  let allOrders = [];
 
   if (dateElement) {
     const today = new Date();
@@ -86,6 +90,106 @@ document.addEventListener('DOMContentLoaded', async () => {
     return productItems.join('');
   };
 
+  const renderOrderDetails = (order) => {
+    const statusText = order.status || 'Pending';
+    const createdDate = order.createdAt ? formatDate(order.createdAt) : 'Not available';
+    const createdTime = order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    }) : 'Not available';
+
+    const productItems = [];
+    if (Number(order.bottle19L) > 0) {
+      productItems.push(`<span class="modal-product-item">19L bottles × ${order.bottle19L}</span>`);
+    }
+    if (Number(order.bottle1_5L) > 0) {
+      productItems.push(`<span class="modal-product-item">1.5L bottles × ${order.bottle1_5L}</span>`);
+    }
+    if (Number(order.bottle500ml) > 0) {
+      productItems.push(`<span class="modal-product-item">500ml bottles × ${order.bottle500ml}</span>`);
+    }
+
+    const productMarkup = productItems.length
+      ? `<div class="modal-product-list">${productItems.join('')}</div>`
+      : '<p>No products selected.</p>';
+
+    return `
+      <h3>${escapeHtml(order.fullName || 'Customer')}</h3>
+      <div class="modal-section">
+        <div class="modal-grid">
+          <div>
+            <span class="modal-label">Phone</span>
+            <div class="modal-value">${escapeHtml(order.phone || 'Not provided')}</div>
+          </div>
+          <div>
+            <span class="modal-label">Email</span>
+            <div class="modal-value">${escapeHtml(order.email || 'Not provided')}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-address">
+          <span class="address-icon">📍</span>
+          <div>
+            <h4>Full Delivery Address</h4>
+            <p>${escapeHtml(order.address || 'Address not provided')}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-grid">
+          <div>
+            <span class="modal-label">Delivery Area</span>
+            <div class="modal-value">${escapeHtml(order.deliveryArea || 'Not provided')}</div>
+          </div>
+          <div>
+            <span class="modal-label">Delivery Date</span>
+            <div class="modal-value">${escapeHtml(order.deliveryDate || 'Not provided')}</div>
+          </div>
+          <div>
+            <span class="modal-label">Delivery Time</span>
+            <div class="modal-value">${escapeHtml(order.deliveryTime || 'Not provided')}</div>
+          </div>
+          <div>
+            <span class="modal-label">Order Status</span>
+            <div class="modal-value">${escapeHtml(statusText)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Products Ordered</h4>
+        ${productMarkup}
+      </div>
+
+      <div class="modal-section">
+        <h4>Customer Notes</h4>
+        <p>${escapeHtml(order.notes || 'No special instructions.')}</p>
+      </div>
+
+      <div class="modal-section">
+        <h4>Created</h4>
+        <p>${escapeHtml(`${createdDate} at ${createdTime}`)}</p>
+      </div>
+    `;
+  };
+
+  const openOrderModal = (order) => {
+    if (!modalBackdrop || !modalContent) return;
+    modalContent.innerHTML = renderOrderDetails(order);
+    modalBackdrop.classList.add('is-open');
+    modalBackdrop.setAttribute('aria-hidden', 'false');
+  };
+
+  const closeOrderModal = () => {
+    if (!modalBackdrop || !modalContent) return;
+    modalBackdrop.classList.remove('is-open');
+    modalBackdrop.setAttribute('aria-hidden', 'true');
+    modalContent.innerHTML = '';
+  };
+
   const renderOrders = (orders) => {
     if (!ordersList) return;
 
@@ -109,6 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const card = document.createElement('article');
       card.className = 'order-card expanded';
+      card.dataset.orderId = order._id || '';
       card.innerHTML = `
         <div class="order-card__header">
           <div>
@@ -186,6 +291,153 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   };
 
+  const updateOrderInState = (updatedOrder) => {
+    allOrders = allOrders.map((order) => {
+      if (order._id === updatedOrder._id) {
+        return updatedOrder;
+      }
+      return order;
+    });
+  };
+
+  const updateDashboardStatsFromState = () => {
+    const total = allOrders.length;
+    const pending = allOrders.filter((order) => {
+      const status = (order.status || 'Pending').toLowerCase();
+      return status === 'pending';
+    }).length;
+
+    const today = new Date();
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const todaysDeliveries = allOrders.filter((order) => order.deliveryDate === todayString).length;
+
+    if (totalOrdersElement) {
+      totalOrdersElement.textContent = String(total);
+    }
+
+    if (pendingOrdersElement) {
+      pendingOrdersElement.textContent = String(pending);
+    }
+
+    if (todayDeliveriesElement) {
+      todayDeliveriesElement.textContent = String(todaysDeliveries);
+    }
+  };
+
+  const refreshOrderCardUI = () => {
+    if (!ordersList) return;
+
+    renderOrders(allOrders);
+    attachToggleHandlers();
+    attachViewHandlers();
+    attachDeliveredHandlers();
+    attachDeleteHandlers();
+  };
+
+  const markOrderAsDelivered = async (orderId) => {
+    const confirmed = window.confirm('Mark this order as Delivered?');
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/orders/${orderId}/delivered`, {
+        method: 'PUT',
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to update order status.');
+      }
+
+      const updatedOrder = data.order;
+      updateOrderInState(updatedOrder);
+      updateDashboardStatsFromState();
+      refreshOrderCardUI();
+    } catch (error) {
+      console.error('Unable to mark order as delivered:', error);
+      window.alert('Unable to update the order status. Please try again.');
+    }
+  };
+
+  const attachViewHandlers = () => {
+    if (!ordersList) return;
+
+    ordersList.addEventListener('click', (event) => {
+      const viewButton = event.target.closest('.view-btn');
+      if (!viewButton) return;
+
+      const card = viewButton.closest('.order-card');
+      if (!card) return;
+
+      const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
+      if (selectedOrder) {
+        openOrderModal(selectedOrder);
+      }
+    });
+  };
+
+  const attachDeliveredHandlers = () => {
+    if (!ordersList) return;
+
+    ordersList.querySelectorAll('.delivered-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.order-card');
+        if (!card) return;
+
+        const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
+        if (selectedOrder) {
+          markOrderAsDelivered(selectedOrder._id);
+        }
+      });
+    });
+  };
+
+  const deleteOrder = async (orderId) => {
+    const confirmed = window.confirm('Delete Order\n\nAre you sure you want to permanently delete this order?');
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to delete order.');
+      }
+
+      allOrders = allOrders.filter((order) => order._id !== orderId);
+      updateDashboardStatsFromState();
+      refreshOrderCardUI();
+
+      if (ordersList) {
+        const successMessage = document.createElement('div');
+        successMessage.className = 'order-card';
+        successMessage.innerHTML = '<p>Order deleted successfully.</p>';
+        ordersList.prepend(successMessage);
+        setTimeout(() => successMessage.remove(), 2500);
+      }
+    } catch (error) {
+      console.error('Unable to delete order:', error);
+      window.alert('Unable to delete the order. Please try again.');
+    }
+  };
+
+  const attachDeleteHandlers = () => {
+    if (!ordersList) return;
+
+    ordersList.querySelectorAll('.delete-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.order-card');
+        if (!card) return;
+
+        const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
+        if (selectedOrder) {
+          deleteOrder(selectedOrder._id);
+        }
+      });
+    });
+  };
+
   const loadOrders = async () => {
     if (!ordersList) return;
 
@@ -199,15 +451,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const data = await response.json();
       const orders = Array.isArray(data.orders) ? data.orders : [];
+      allOrders = orders;
 
       updateDashboardStats(orders);
       renderOrders(orders);
       attachToggleHandlers();
+      attachViewHandlers();
+      attachDeliveredHandlers();
+      attachDeleteHandlers();
     } catch (error) {
       console.error('Unable to load orders:', error);
       ordersList.innerHTML = '<div class="order-card"><p>Unable to load orders.</p></div>';
     }
   };
+
+  if (modalCloseButton) {
+    modalCloseButton.addEventListener('click', closeOrderModal);
+  }
+
+  if (modalBackdrop) {
+    modalBackdrop.addEventListener('click', (event) => {
+      if (event.target === modalBackdrop) {
+        closeOrderModal();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modalBackdrop && modalBackdrop.classList.contains('is-open')) {
+      closeOrderModal();
+    }
+  });
 
   loadOrders();
 });
