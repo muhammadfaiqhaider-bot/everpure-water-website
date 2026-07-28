@@ -10,6 +10,9 @@ const indexController = require('../controllers/indexController');
 // Import the controller functions from orderController.js.
 const orderController = require('../controllers/orderController');
 
+// Import the controller functions from adminController.js.
+const adminController = require('../controllers/adminController');
+
 // Define the GET route for the homepage ("/").
 router.get('/', indexController.getHome);
 
@@ -28,6 +31,11 @@ router.put('/api/orders/:id/delivered', orderController.markOrderAsDelivered);
 // Define the DELETE route for removing an order.
 // When a DELETE request hits /api/orders/:id, orderController.deleteOrder runs.
 router.delete('/api/orders/:id', orderController.deleteOrder);
+
+// Define the POST route for admin login.
+// When a POST request hits /api/admin/login,
+// adminController.loginAdmin runs.
+router.post('/api/admin/login', adminController.loginAdmin);
 
 // Export this router so server.js can import and use it.
 module.exports = router;

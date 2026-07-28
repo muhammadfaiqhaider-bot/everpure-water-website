@@ -1,5 +1,12 @@
-// Show today's date and load orders from the backend.
-document.addEventListener('DOMContentLoaded', async () => {
+// Protect the admin dashboard so it cannot run without a valid login token.
+const adminToken = localStorage.getItem('everpureAdminToken');
+
+// If no token is present, redirect to the login page immediately.
+if (!adminToken) {
+  window.location.href = 'admin-login.html';
+} else {
+  // Show today's date and load orders from the backend.
+  document.addEventListener('DOMContentLoaded', async () => {
   const dateElement = document.getElementById('currentDate');
   const totalOrdersElement = document.getElementById('totalOrders');
   const pendingOrdersElement = document.getElementById('pendingOrders');
@@ -584,4 +591,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   loadOrders();
-});
+  });
+}
