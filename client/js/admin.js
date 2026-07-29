@@ -1,12 +1,19 @@
-// Protect the admin dashboard so it cannot run without a valid login token.
+// Added at the very top of admin.js to protect the dashboard before any other logic runs.
 const adminToken = localStorage.getItem('everpureAdminToken');
 
-// If no token is present, redirect to the login page immediately.
+// If the admin token is missing, redirect immediately and prevent the rest of the dashboard code from running.
 if (!adminToken) {
-  window.location.href = 'admin-login.html';
+  window.location.replace('admin-login.html');
 } else {
-  // Show today's date and load orders from the backend.
+  // Continue loading the dashboard normally when a valid token is present.
   document.addEventListener('DOMContentLoaded', async () => {
+    // Populate the admin username element if it exists on the page.
+    const adminUsernameElement = document.getElementById('adminUsername');
+    if (adminUsernameElement) {
+      adminUsernameElement.textContent = localStorage.getItem('everpureAdminUsername') || 'Admin';
+    }
+
+    // Show today's date and load orders from the backend.
   const dateElement = document.getElementById('currentDate');
   const totalOrdersElement = document.getElementById('totalOrders');
   const pendingOrdersElement = document.getElementById('pendingOrders');

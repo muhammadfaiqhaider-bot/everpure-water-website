@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hasStoredToken = () => Boolean(localStorage.getItem("everpureAdminToken"));
 
   if (hasStoredToken()) {
-    window.location.href = "admin.html";
+    window.location.replace("admin.html");
     return;
   }
 
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showMessage("Login successful. Redirecting...", "success");
 
         setTimeout(() => {
-          window.location.href = "admin.html";
+          window.location.replace("admin.html");
         }, 1000);
       } else {
         const errorMessage = data.message || "Invalid username or password.";
