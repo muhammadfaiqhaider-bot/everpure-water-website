@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
 const loginAdmin = async (req, res) => {
+  console.log("LOGIN ROUTE HIT");
+
   try {
     const { username, password } = req.body;
 
@@ -39,11 +41,14 @@ const loginAdmin = async (req, res) => {
       token
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Server error.'
-    });
-  }
+  console.log("========== LOGIN ERROR ==========");
+  console.error(error);
+
+  return res.status(500).json({
+    success: false,
+    message: error.message
+  });
+}
 };
 
 module.exports = { loginAdmin };
