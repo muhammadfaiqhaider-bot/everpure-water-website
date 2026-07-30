@@ -37,6 +37,21 @@ if (!adminToken) {
     let orders = [];
     const filters = { search: '', status: 'all', sort: 'newest' };
 
+    const fetchDeliveredOrders = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/orders/history');
+        if (!response.ok) {
+          throw new Error('Failed to load history');
+        }
+
+        const data = await response.json();
+        return Array.isArray(data.orders) ? data.orders : [];
+      } catch (error) {
+        console.error('Unable to load delivered orders:', error);
+        return [];
+      }
+    };
+
     const escapeHtml = (value) => String(value || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -196,9 +211,18 @@ if (!adminToken) {
       }
     });
 
-    orders = getStoredOrders();
-    saveOrders(orders);
-    updateSummary(orders);
-    renderRows(orders);
+    const loadHistory = async () => {
+      const deliveredOrders = await fetchDeliveredOrders();
+      const storedOrders = getStoredOrders();
+      const mergedOrders = [...storedOrders.filter((order) => String(order.status || 'Pending').toLowerCase() === 'delivered'), ...deliveredOrders]
+        .filter((order, index, list) => list.findIndex((item) => String(item._id || item.id) === String(order._id || order.id)) === index);
+
+      orders = mergedOrders.map((order) => normalizeOrder(order));
+      saveOrders(orders);
+      updateSummary(orders);
+      renderRows(orders);
+    };
+
+    loadHistory();
   });
 }
