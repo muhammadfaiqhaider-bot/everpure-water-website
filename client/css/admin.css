@@ -97,6 +97,50 @@ select {
   color: var(--text);
 }
 
+/* ===================== TOPBAR ACTIONS ===================== */
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.22), rgba(255, 107, 107, 0.12));
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 10px 24px rgba(255, 107, 107, 0.14);
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.3), rgba(255, 107, 107, 0.2));
+  box-shadow: 0 14px 28px rgba(255, 107, 107, 0.22);
+}
+
+.logout-btn:focus-visible {
+  outline: 2px solid rgba(47, 155, 224, 0.55);
+  outline-offset: 3px;
+}
+
+.logout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
 /* ===================== MAIN PANEL ===================== */
 .dashboard-content {
   margin-top: 24px;

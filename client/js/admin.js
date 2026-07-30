@@ -13,295 +13,193 @@ if (!adminToken) {
       adminUsernameElement.textContent = localStorage.getItem('everpureAdminUsername') || 'Admin';
     }
 
-    // Show today's date and load orders from the backend.
-  const dateElement = document.getElementById('currentDate');
-  const totalOrdersElement = document.getElementById('totalOrders');
-  const pendingOrdersElement = document.getElementById('pendingOrders');
-  const todayDeliveriesElement = document.getElementById('todayDeliveries');
-  const ordersList = document.querySelector('.orders-list');
-  const modalBackdrop = document.getElementById('orderModalBackdrop');
-  const modalCloseButton = document.getElementById('orderModalClose');
-  const modalContent = document.getElementById('orderModalContent');
-  const customerSearchInput = document.getElementById('customerSearch');
-  const phoneSearchInput = document.getElementById('phoneSearch');
-  const statusFilterSelect = document.getElementById('statusFilter');
-  const sortSelect = document.getElementById('sortOrder');
-  let allOrders = [];
-  let viewHandlersBound = false;
-  const filters = {
-    searchTerm: '',
-    status: 'all',
-    sortBy: 'newest',
-  };
+    // Handle the logout button with a confirmation prompt before clearing the session.
+    const logoutButton = document.getElementById('logoutBtn');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', () => {
+        const confirmed = window.confirm('Are you sure you want to logout?');
 
-  if (dateElement) {
-    const today = new Date();
-    dateElement.textContent = today.toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
+        if (!confirmed) {
+          return;
+        }
 
-  // Keep the dashboard cards in sync with the API response.
-  const updateDashboardStats = (orders) => {
-    const total = orders.length;
-    const pending = orders.filter((order) => {
-      const status = (order.status || 'Pending').toLowerCase();
-      return status === 'pending';
-    }).length;
-
-    const today = new Date();
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const todaysDeliveries = orders.filter((order) => order.deliveryDate === todayString).length;
-
-    if (totalOrdersElement) {
-      totalOrdersElement.textContent = String(total);
+        localStorage.removeItem('everpureAdminToken');
+        localStorage.removeItem('everpureAdminUsername');
+        window.location.replace('admin-login.html');
+      });
     }
 
-    if (pendingOrdersElement) {
-      pendingOrdersElement.textContent = String(pending);
+    // Cache the page elements that are used by the dashboard UI.
+    const dateElement = document.getElementById('currentDate');
+    const totalOrdersElement = document.getElementById('totalOrders');
+    const pendingOrdersElement = document.getElementById('pendingOrders');
+    const deliveredOrdersElement = document.getElementById('deliveredOrders') || document.getElementById('todayDeliveries');
+    const ordersContainer = document.querySelector('.orders-list');
+
+    // Keep the live list of fetched orders in memory for stat updates and rendering.
+    let orders = [];
+
+    // Update the visible date inside the header when the element exists.
+    if (dateElement) {
+      const today = new Date();
+      dateElement.textContent = today.toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
     }
 
-    if (todayDeliveriesElement) {
-      todayDeliveriesElement.textContent = String(todaysDeliveries);
-    }
-  };
-
-  const escapeHtml = (value) => {
-    return String(value || '')
+    // Safely escape values before they are inserted into the DOM.
+    const escapeHtml = (value) => String(value || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-  };
 
-  const getStatusClass = (status) => {
-    const normalizedStatus = (status || 'Pending').toLowerCase();
-    if (normalizedStatus === 'delivered') return 'delivered';
-    if (normalizedStatus === 'processing') return 'processing';
-    return 'pending';
-  };
+    // Determine the appropriate status class for styling each card.
+    const getStatusClass = (status) => {
+      const normalizedStatus = String(status || 'Pending').toLowerCase();
 
-  // Normalize text so search filtering stays case-insensitive.
-  const normalizeText = (value) => String(value || '').trim().toLowerCase();
-
-  // Search across customer name, phone number, and delivery area.
-  const matchesSearchTerm = (order, searchTerm) => {
-    const normalizedSearchTerm = normalizeText(searchTerm);
-    if (!normalizedSearchTerm) return true;
-
-    const searchTerms = normalizedSearchTerm.split(/\s+/).filter(Boolean);
-    const searchableText = `${order.fullName || ''} ${order.phone || ''} ${order.deliveryArea || ''}`.toLowerCase();
-
-    return searchTerms.some((term) => searchableText.includes(term));
-  };
-
-  // Match the selected status filter without calling the backend again.
-  const matchesStatusFilter = (order, selectedStatus) => {
-    if (!selectedStatus || selectedStatus === 'all') return true;
-    return normalizeText(order.status) === normalizeText(selectedStatus);
-  };
-
-  // Sort the current list using the order creation timestamp.
-  const sortOrders = (orders, sortBy) => {
-    const sortedOrders = [...orders];
-
-    sortedOrders.sort((firstOrder, secondOrder) => {
-      const firstTime = new Date(firstOrder.createdAt || 0).getTime();
-      const secondTime = new Date(secondOrder.createdAt || 0).getTime();
-
-      if (sortBy === 'oldest') {
-        return firstTime - secondTime;
+      if (normalizedStatus === 'delivered') {
+        return 'delivered';
       }
 
-      return secondTime - firstTime;
-    });
+      if (normalizedStatus === 'processing') {
+        return 'processing';
+      }
 
-    return sortedOrders;
-  };
+      return 'pending';
+    };
 
-  // Combine search, filter, and sort from the already loaded orders array.
-  const getVisibleOrders = () => {
-    const filteredOrders = allOrders.filter((order) => {
-      return matchesSearchTerm(order, filters.searchTerm)
-        && matchesStatusFilter(order, filters.status);
-    });
+    // Format a date to a readable string without breaking on invalid values.
+    const formatDate = (value) => {
+      if (!value) {
+        return 'Not provided';
+      }
 
-    return sortOrders(filteredOrders, filters.sortBy);
-  };
+      const parsedDate = new Date(value);
+      if (Number.isNaN(parsedDate.getTime())) {
+        return escapeHtml(value);
+      }
 
-  const formatDate = (value) => {
-    if (!value) return 'Not provided';
-    const parsedDate = new Date(value);
-    if (Number.isNaN(parsedDate.getTime())) return escapeHtml(value);
-    return parsedDate.toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
+      return parsedDate.toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    };
 
-  const buildProductBadges = (order) => {
-    const productItems = [];
+    // Build a short product summary from the order data when available.
+    const buildProductSummary = (order) => {
+      const parts = [];
 
-    if (Number(order.bottle19L) > 0) {
-      productItems.push(`<span class="product-badge">19L Bottle × ${order.bottle19L}</span>`);
-    }
+      if (Number(order.bottle19L) > 0) {
+        parts.push(`19L × ${order.bottle19L}`);
+      }
 
-    if (Number(order.bottle1_5L) > 0) {
-      productItems.push(`<span class="product-badge">1.5L Bottle × ${order.bottle1_5L}</span>`);
-    }
+      if (Number(order.bottle1_5L) > 0) {
+        parts.push(`1.5L × ${order.bottle1_5L}`);
+      }
 
-    if (Number(order.bottle500ml) > 0) {
-      productItems.push(`<span class="product-badge">500ml Bottle × ${order.bottle500ml}</span>`);
-    }
+      if (Number(order.bottle500ml) > 0) {
+        parts.push(`500ml × ${order.bottle500ml}`);
+      }
 
-    return productItems.join('');
-  };
+      if (!parts.length) {
+        return 'No product details';
+      }
 
-  const renderOrderDetails = (order) => {
-    const statusText = order.status || 'Pending';
-    const createdDate = order.createdAt ? formatDate(order.createdAt) : 'Not available';
-    const createdTime = order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-    }) : 'Not available';
+      return parts.join(' • ');
+    };
 
-    const productItems = [];
-    if (Number(order.bottle19L) > 0) {
-      productItems.push(`<span class="modal-product-item">19L bottles × ${order.bottle19L}</span>`);
-    }
-    if (Number(order.bottle1_5L) > 0) {
-      productItems.push(`<span class="modal-product-item">1.5L bottles × ${order.bottle1_5L}</span>`);
-    }
-    if (Number(order.bottle500ml) > 0) {
-      productItems.push(`<span class="modal-product-item">500ml bottles × ${order.bottle500ml}</span>`);
-    }
+    // Build a quantity summary so each card shows a compact product overview.
+    const buildQuantitySummary = (order) => {
+      const totals = [];
 
-    const productMarkup = productItems.length
-      ? `<div class="modal-product-list">${productItems.join('')}</div>`
-      : '<p>No products selected.</p>';
+      if (Number(order.bottle19L) > 0) {
+        totals.push(`${order.bottle19L} × 19L`);
+      }
 
-    return `
-      <h3>${escapeHtml(order.fullName || 'Customer')}</h3>
-      <div class="modal-section">
-        <div class="modal-grid">
-          <div>
-            <span class="modal-label">Phone</span>
-            <div class="modal-value">${escapeHtml(order.phone || 'Not provided')}</div>
-          </div>
-          <div>
-            <span class="modal-label">Email</span>
-            <div class="modal-value">${escapeHtml(order.email || 'Not provided')}</div>
-          </div>
-        </div>
-      </div>
+      if (Number(order.bottle1_5L) > 0) {
+        totals.push(`${order.bottle1_5L} × 1.5L`);
+      }
 
-      <div class="modal-section">
-        <div class="modal-address">
-          <span class="address-icon">📍</span>
-          <div>
-            <h4>Full Delivery Address</h4>
-            <p>${escapeHtml(order.address || 'Address not provided')}</p>
-          </div>
-        </div>
-      </div>
+      if (Number(order.bottle500ml) > 0) {
+        totals.push(`${order.bottle500ml} × 500ml`);
+      }
 
-      <div class="modal-section">
-        <div class="modal-grid">
-          <div>
-            <span class="modal-label">Delivery Area</span>
-            <div class="modal-value">${escapeHtml(order.deliveryArea || 'Not provided')}</div>
-          </div>
-          <div>
-            <span class="modal-label">Delivery Date</span>
-            <div class="modal-value">${escapeHtml(order.deliveryDate || 'Not provided')}</div>
-          </div>
-          <div>
-            <span class="modal-label">Delivery Time</span>
-            <div class="modal-value">${escapeHtml(order.deliveryTime || 'Not provided')}</div>
-          </div>
-          <div>
-            <span class="modal-label">Order Status</span>
-            <div class="modal-value">${escapeHtml(statusText)}</div>
-          </div>
-        </div>
-      </div>
+      return totals.join(' • ') || '—';
+    };
 
-      <div class="modal-section">
-        <h4>Products Ordered</h4>
-        ${productMarkup}
-      </div>
+    // Fetch all orders from the backend using the existing API endpoint.
+    const fetchOrders = async () => {
+      const response = await fetch('http://localhost:3000/api/orders');
 
-      <div class="modal-section">
-        <h4>Customer Notes</h4>
-        <p>${escapeHtml(order.notes || 'No special instructions.')}</p>
-      </div>
+      if (!response.ok) {
+        throw new Error('Unable to load orders from the server.');
+      }
 
-      <div class="modal-section">
-        <h4>Created</h4>
-        <p>${escapeHtml(`${createdDate} at ${createdTime}`)}</p>
-      </div>
-    `;
-  };
+      const data = await response.json();
+      return Array.isArray(data.orders) ? data.orders : [];
+    };
 
-  const openOrderModal = (order) => {
-    if (!modalBackdrop || !modalContent) return;
-    modalContent.innerHTML = renderOrderDetails(order);
-    modalBackdrop.classList.add('is-open');
-    modalBackdrop.setAttribute('aria-hidden', 'false');
-  };
+    // Update the dashboard statistics with the latest order values.
+    const updateStatistics = (orderList) => {
+      const total = orderList.length;
+      const pending = orderList.filter((order) => {
+        const status = String(order.status || 'Pending').toLowerCase();
+        return status === 'pending' || status === 'processing';
+      }).length;
+      const delivered = orderList.filter((order) => {
+        const status = String(order.status || 'Pending').toLowerCase();
+        return status === 'delivered';
+      }).length;
 
-  const closeOrderModal = () => {
-    if (!modalBackdrop || !modalContent) return;
-    modalBackdrop.classList.remove('is-open');
-    modalBackdrop.setAttribute('aria-hidden', 'true');
-    modalContent.innerHTML = '';
-  };
+      if (totalOrdersElement) {
+        totalOrdersElement.textContent = String(total);
+      }
 
-  const renderOrders = (orders) => {
-    if (!ordersList) return;
+      if (pendingOrdersElement) {
+        pendingOrdersElement.textContent = String(pending);
+      }
 
-    ordersList.innerHTML = '';
+      if (deliveredOrdersElement) {
+        deliveredOrdersElement.textContent = String(delivered);
+      }
+    };
 
-    if (!orders.length) {
-      const emptyMessage = allOrders.length ? 'No matching orders found.' : 'No orders available.';
-      ordersList.innerHTML = `<div class="order-card"><p>${emptyMessage}</p></div>`;
-      return;
-    }
-
-    const fragment = document.createDocumentFragment();
-
-    orders.forEach((order) => {
-      const statusText = order.status || 'Pending';
-      const statusClass = getStatusClass(statusText);
-      const orderId = order._id ? `Order #${String(order._id).slice(-6).toUpperCase()}` : 'Order #N/A';
-      const notesText = order.notes ? order.notes : 'No special instructions.';
-      const deliveryDateText = formatDate(order.deliveryDate);
-      const deliveryTimeText = order.deliveryTime || 'Not selected';
-      const deliveryAreaText = order.deliveryArea || 'Not provided';
-
+    // Create one card for each order without hardcoding customer names.
+    const createOrderCard = (order) => {
       const card = document.createElement('article');
       card.className = 'order-card expanded';
-      card.dataset.orderId = order._id || '';
+
+      const statusText = String(order.status || 'Pending');
+      const statusClass = getStatusClass(statusText);
+      const fullName = order.fullName || order.customerName || order.name || 'Customer';
+      const phone = order.phone || 'Not provided';
+      const area = order.deliveryArea || order.area || 'Not provided';
+      const orderId = order._id ? `Order #${String(order._id).slice(-6).toUpperCase()}` : 'Order #N/A';
+      const deliveryDate = formatDate(order.deliveryDate || order.createdAt || order.orderDate);
+      const deliveryTime = order.deliveryTime || 'Not selected';
+      const productSummary = buildProductSummary(order);
+      const quantitySummary = buildQuantitySummary(order);
+      const priceValue = order.price || 'Pending';
+
       card.innerHTML = `
         <div class="order-card__header">
           <div>
-            <h3>${escapeHtml(order.fullName || 'Customer')}</h3>
+            <h3>${escapeHtml(fullName)}</h3>
             <div class="meta-row">
               <span class="order-id">${escapeHtml(orderId)}</span>
-              <span class="meta-pill">${escapeHtml(deliveryDateText)}</span>
-              <span class="meta-pill">${escapeHtml(deliveryTimeText)}</span>
-              <span class="meta-pill">Area: ${escapeHtml(deliveryAreaText)}</span>
+              <span class="meta-pill">${escapeHtml(deliveryDate)}</span>
+              <span class="meta-pill">${escapeHtml(deliveryTime)}</span>
             </div>
           </div>
 
           <div class="order-card__header-actions">
             <span class="status-badge ${statusClass}">${escapeHtml(statusText)}</span>
-            <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
           </div>
         </div>
 
@@ -309,294 +207,74 @@ if (!adminToken) {
           <div class="info-grid">
             <div class="info-item">
               <span class="info-label">📞 Phone</span>
-              <span class="info-value">${escapeHtml(order.phone || 'Not provided')}</span>
+              <span class="info-value">${escapeHtml(phone)}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">📧 Email</span>
-              <span class="info-value">${escapeHtml(order.email || 'Not provided')}</span>
+              <span class="info-label">📍 Area</span>
+              <span class="info-value">${escapeHtml(area)}</span>
             </div>
           </div>
 
           <div class="address-block">
             <span class="address-icon">📍</span>
             <div>
-              <h4>Full Delivery Address</h4>
+              <h4>Delivery Address</h4>
               <p>${escapeHtml(order.address || 'Address not provided')}</p>
             </div>
           </div>
 
           <div class="product-section">
-            <h4>Order Details</h4>
-            <div class="product-badges">
-              ${buildProductBadges(order)}
-            </div>
+            <h4>Product Summary</h4>
+            <p>${escapeHtml(productSummary)}</p>
+            <p class="info-value">${escapeHtml(quantitySummary)}</p>
           </div>
 
           <div class="notes-block">
-            <h4>💬 Customer Notes</h4>
-            <p>${escapeHtml(notesText)}</p>
+            <h4>💬 Notes</h4>
+            <p>${escapeHtml(order.notes || 'No special instructions.')}</p>
           </div>
 
           <div class="card-actions">
-            <button type="button" class="action-btn view-btn">View</button>
-            <button type="button" class="action-btn delivered-btn">Mark Delivered</button>
-            <button type="button" class="action-btn delete-btn">Delete</button>
+            <span class="meta-pill">Price: ${escapeHtml(priceValue)}</span>
           </div>
         </div>
       `;
 
-      fragment.appendChild(card);
-    });
+      return card;
+    };
 
-    ordersList.appendChild(fragment);
-  };
-
-  const attachToggleHandlers = () => {
-    document.querySelectorAll('.order-card__toggle').forEach((button) => {
-      button.addEventListener('click', () => {
-        const card = button.closest('.order-card');
-        if (!card) return;
-
-        const isExpanded = card.classList.toggle('expanded');
-        button.textContent = isExpanded ? 'Hide' : 'Show';
-        button.setAttribute('aria-expanded', String(isExpanded));
-      });
-    });
-  };
-
-  const updateOrderInState = (updatedOrder) => {
-    allOrders = allOrders.map((order) => {
-      if (order._id === updatedOrder._id) {
-        return updatedOrder;
+    // Render every fetched order into the existing container.
+    const renderOrders = (orderList) => {
+      if (!ordersContainer) {
+        return;
       }
-      return order;
-    });
-  };
 
-  const updateDashboardStatsFromState = () => {
-    const total = allOrders.length;
-    const pending = allOrders.filter((order) => {
-      const status = (order.status || 'Pending').toLowerCase();
-      return status === 'pending';
-    }).length;
+      ordersContainer.innerHTML = '';
 
-    const today = new Date();
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    const todaysDeliveries = allOrders.filter((order) => order.deliveryDate === todayString).length;
+      if (!orderList.length) {
+        ordersContainer.innerHTML = '<div class="order-card"><p>No orders available.</p></div>';
+        return;
+      }
 
-    if (totalOrdersElement) {
-      totalOrdersElement.textContent = String(total);
-    }
+      const fragment = document.createDocumentFragment();
+      orderList.forEach((order) => {
+        fragment.appendChild(createOrderCard(order));
+      });
 
-    if (pendingOrdersElement) {
-      pendingOrdersElement.textContent = String(pending);
-    }
+      ordersContainer.appendChild(fragment);
+    };
 
-    if (todayDeliveriesElement) {
-      todayDeliveriesElement.textContent = String(todaysDeliveries);
-    }
-  };
-
-  const refreshOrderCardUI = () => {
-    if (!ordersList) return;
-
-    const visibleOrders = getVisibleOrders();
-    renderOrders(visibleOrders);
-    attachToggleHandlers();
-    attachViewHandlers();
-    attachDeliveredHandlers();
-    attachDeleteHandlers();
-  };
-
-  const markOrderAsDelivered = async (orderId) => {
-    const confirmed = window.confirm('Mark this order as Delivered?');
-    if (!confirmed) return;
-
+    // Load the dashboard data and update the UI.
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}/delivered`, {
-        method: 'PUT',
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to update order status.');
-      }
-
-      const updatedOrder = data.order;
-      updateOrderInState(updatedOrder);
-      updateDashboardStatsFromState();
-      refreshOrderCardUI();
-    } catch (error) {
-      console.error('Unable to mark order as delivered:', error);
-      window.alert('Unable to update the order status. Please try again.');
-    }
-  };
-
-  const handleOrdersListClick = (event) => {
-    const viewButton = event.target.closest('.view-btn');
-    if (!viewButton) return;
-
-    const card = viewButton.closest('.order-card');
-    if (!card) return;
-
-    const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
-    if (selectedOrder) {
-      openOrderModal(selectedOrder);
-    }
-  };
-
-  const attachViewHandlers = () => {
-    if (!ordersList || viewHandlersBound) return;
-
-    ordersList.addEventListener('click', handleOrdersListClick);
-    viewHandlersBound = true;
-  };
-
-  const attachDeliveredHandlers = () => {
-    if (!ordersList) return;
-
-    ordersList.querySelectorAll('.delivered-btn').forEach((button) => {
-      button.addEventListener('click', () => {
-        const card = button.closest('.order-card');
-        if (!card) return;
-
-        const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
-        if (selectedOrder) {
-          markOrderAsDelivered(selectedOrder._id);
-        }
-      });
-    });
-  };
-
-  const deleteOrder = async (orderId) => {
-    const confirmed = window.confirm('Delete Order\n\nAre you sure you want to permanently delete this order?');
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to delete order.');
-      }
-
-      allOrders = allOrders.filter((order) => order._id !== orderId);
-      updateDashboardStatsFromState();
-      refreshOrderCardUI();
-
-      if (ordersList) {
-        const successMessage = document.createElement('div');
-        successMessage.className = 'order-card';
-        successMessage.innerHTML = '<p>Order deleted successfully.</p>';
-        ordersList.prepend(successMessage);
-        setTimeout(() => successMessage.remove(), 2500);
-      }
-    } catch (error) {
-      console.error('Unable to delete order:', error);
-      window.alert('Unable to delete the order. Please try again.');
-    }
-  };
-
-  const attachDeleteHandlers = () => {
-    if (!ordersList) return;
-
-    ordersList.querySelectorAll('.delete-btn').forEach((button) => {
-      button.addEventListener('click', () => {
-        const card = button.closest('.order-card');
-        if (!card) return;
-
-        const selectedOrder = allOrders.find((order) => order._id === card.dataset.orderId);
-        if (selectedOrder) {
-          deleteOrder(selectedOrder._id);
-        }
-      });
-    });
-  };
-
-  const applyCurrentView = () => {
-    refreshOrderCardUI();
-  };
-
-  const attachFilterHandlers = () => {
-    if (customerSearchInput) {
-      customerSearchInput.addEventListener('input', () => {
-        filters.searchTerm = [customerSearchInput.value, phoneSearchInput ? phoneSearchInput.value : '']
-          .filter(Boolean)
-          .join(' ')
-          .trim();
-        applyCurrentView();
-      });
-    }
-
-    if (phoneSearchInput) {
-      phoneSearchInput.addEventListener('input', () => {
-        filters.searchTerm = [customerSearchInput ? customerSearchInput.value : '', phoneSearchInput.value]
-          .filter(Boolean)
-          .join(' ')
-          .trim();
-        applyCurrentView();
-      });
-    }
-
-    if (statusFilterSelect) {
-      statusFilterSelect.addEventListener('change', () => {
-        filters.status = statusFilterSelect.value || 'all';
-        applyCurrentView();
-      });
-    }
-
-    if (sortSelect) {
-      sortSelect.addEventListener('change', () => {
-        filters.sortBy = sortSelect.value || 'newest';
-        applyCurrentView();
-      });
-    }
-  };
-
-  const loadOrders = async () => {
-    if (!ordersList) return;
-
-    ordersList.innerHTML = '<div class="order-card"><p>Loading orders...</p></div>';
-
-    try {
-      const response = await fetch('http://localhost:3000/api/orders');
-      if (!response.ok) {
-        throw new Error('Request failed');
-      }
-
-      const data = await response.json();
-      const orders = Array.isArray(data.orders) ? data.orders : [];
-      allOrders = orders;
-
-      updateDashboardStats(orders);
-      attachFilterHandlers();
-      refreshOrderCardUI();
+      orders = await fetchOrders();
+      updateStatistics(orders);
+      renderOrders(orders);
     } catch (error) {
       console.error('Unable to load orders:', error);
-      ordersList.innerHTML = '<div class="order-card"><p>Unable to load orders.</p></div>';
-    }
-  };
 
-  if (modalCloseButton) {
-    modalCloseButton.addEventListener('click', closeOrderModal);
-  }
-
-  if (modalBackdrop) {
-    modalBackdrop.addEventListener('click', (event) => {
-      if (event.target === modalBackdrop) {
-        closeOrderModal();
+      if (ordersContainer) {
+        ordersContainer.innerHTML = '<div class="order-card"><p>Unable to load orders right now.</p></div>';
       }
-    });
-  }
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && modalBackdrop && modalBackdrop.classList.contains('is-open')) {
-      closeOrderModal();
     }
-  });
-
-  loadOrders();
   });
 }
