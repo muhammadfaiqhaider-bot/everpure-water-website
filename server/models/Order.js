@@ -79,6 +79,14 @@ bottle500ml: {
       type: String,
     },
 
+    // ---------------- Pricing ----------------
+
+    // Total price calculated on the backend from the ordered quantities.
+    price: {
+      type: Number,
+      default: 0,
+    },
+
     // ---------------- System ----------------
 
     // Tracks the current state of the order.

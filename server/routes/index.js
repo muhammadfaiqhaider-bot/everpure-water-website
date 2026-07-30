@@ -20,6 +20,10 @@ router.get('/', indexController.getHome);
 // When a GET request hits /api/orders, orderController.getAllOrders runs.
 router.get('/api/orders', orderController.getAllOrders);
 
+// Define the GET route for retrieving only delivered orders.
+// When a GET request hits /api/orders/history, orderController.getDeliveredOrders runs.
+router.get('/api/orders/history', orderController.getDeliveredOrders);
+
 // Define the POST route for creating a new order.
 // When a POST request hits /api/orders, orderController.createOrder runs.
 router.post('/api/orders', orderController.createOrder);

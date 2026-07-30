@@ -23,6 +23,12 @@ const {
     notes,
 } = req.body;
 
+    // Calculate the total price on the backend using the official pricing.
+    const calculatedPrice =
+      (Number(bottle19L) * 250) +
+      (Number(bottle1_5L) * 350) +
+      (Number(bottle500ml) * 350);
+
     // Create a new Order using the Order model.
     // At this point, it only exists in memory — it hasn't been saved
     // to MongoDB yet.
@@ -38,6 +44,7 @@ const newOrder = new Order({
     deliveryDate,
     deliveryTime,
     notes,
+    price: calculatedPrice,
 });
 
     // Save the new order to MongoDB.
@@ -93,6 +100,27 @@ const getAllOrders = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch orders.',
+    });
+  }
+};
+
+// This function retrieves only orders whose status is exactly "Delivered".
+// It is used for the Order History page and returns them newest first.
+const getDeliveredOrders = async (req, res) => {
+  try {
+    const deliveredOrders = await Order.find({ status: 'Delivered' }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: deliveredOrders.length,
+      orders: deliveredOrders,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch delivered orders.',
     });
   }
 };
@@ -174,6 +202,7 @@ const deleteOrder = async (req, res) => {
 module.exports = {
   createOrder,
   getAllOrders,
+  getDeliveredOrders,
   markOrderAsDelivered,
   deleteOrder,
 };

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EverPure Order History</title>
+    <link rel="stylesheet" href="css/admin-history.css" />
+  </head>
+  <body>
+    <div class="history-shell">
+      <header class="history-header">
+        <div class="history-brand">
+          <div class="brand-mark">
+            <img src="assets/logo/logo.png" alt="EverPure Water Plant logo" />
+          </div>
+          <div>
+            <p class="eyebrow">EverPure Admin</p>
+            <h1>Order History</h1>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a href="admin.html" class="header-btn secondary-btn">Back to Dashboard</a>
+          <button type="button" id="logoutBtn" class="header-btn danger-btn" aria-label="Logout from admin history">
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M10 17l1.4 1.4L16 13l-4.6-5.4L10 9l2.6 2.6H4v2h8.6L10 17Zm8-13h-8v2h8v12h-8v2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" />
+              </svg>
+            </span>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="welcome-strip">
+        <div>
+          <p class="eyebrow">Secure overview</p>
+          <h2>Welcome, <span id="adminUsername">Admin</span></h2>
+        </div>
+      </section>
+
+      <section class="summary-grid" aria-label="Order history summary">
+        <article class="summary-card">
+          <span class="summary-label">Total Orders</span>
+          <strong class="summary-value" id="totalOrders">0</strong>
+        </article>
+
+        <article class="summary-card">
+          <span class="summary-label">Pending Orders</span>
+          <strong class="summary-value" id="pendingOrders">0</strong>
+        </article>
+
+        <article class="summary-card">
+          <span class="summary-label">Delivered Orders</span>
+          <strong class="summary-value" id="deliveredOrders">0</strong>
+        </article>
+
+        <article class="summary-card">
+          <span class="summary-label">Total Revenue</span>
+          <strong class="summary-value">Rs.0</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-toolbar">
+          <label class="toolbar-field">
+            <span>Search</span>
+            <input id="searchInput" type="text" placeholder="Search customer, phone..." />
+          </label>
+
+          <label class="toolbar-field">
+            <span>Status</span>
+            <select id="statusFilter">
+              <option value="all">All</option>
+              <option value="pending">Pending</option>
+              <option value="delivered">Delivered</option>
+            </select>
+          </label>
+
+          <label class="toolbar-field">
+            <span>Sort</span>
+            <select id="sortOrder">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </label>
+
+          <button type="button" class="export-btn">Export CSV</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th>Delivery Area</th>
+                <th>Delivery Date</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr>
+                <td colspan="8">
+                  <div class="empty-state">
+                    <div class="empty-icon" aria-hidden="true">📦</div>
+                    <h3>No orders found.</h3>
+                    <p>Order history will appear here once available.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script src="js/admin-history.js"></script>
+  </body>
+</html>
