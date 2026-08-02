@@ -23,11 +23,15 @@ const {
     notes,
 } = req.body;
 
+    const parsedBottle19L = Number(bottle19L || 0);
+    const parsedBottle15L = Number(bottle1_5L || 0);
+    const parsedBottle500ml = Number(bottle500ml || 0);
+
     // Calculate the total price on the backend using the official pricing.
     const calculatedPrice =
-      (Number(bottle19L) * 250) +
-      (Number(bottle1_5L) * 350) +
-      (Number(bottle500ml) * 350);
+      (parsedBottle19L * 250) +
+      (parsedBottle15L * 350) +
+      (parsedBottle500ml * 350);
 
     // Create a new Order using the Order model.
     // At this point, it only exists in memory — it hasn't been saved

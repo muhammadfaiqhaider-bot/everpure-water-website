@@ -18,6 +18,7 @@ if (!adminToken) {
   const totalOrdersElement = document.getElementById('totalOrders');
   const pendingOrdersElement = document.getElementById('pendingOrders');
   const todayDeliveriesElement = document.getElementById('todayDeliveries');
+  const revenueElement = document.getElementById('revenueValue');
   const ordersList = document.querySelector('.orders-list');
   const modalBackdrop = document.getElementById('orderModalBackdrop');
   const modalCloseButton = document.getElementById('orderModalClose');
@@ -44,6 +45,10 @@ if (!adminToken) {
     });
   }
 
+  const calculateRevenue = (orders) => {
+    return orders.filter((order) => String(order.status || 'Pending').toLowerCase() === 'delivered').reduce((sum, order) => sum + Number(order.price || 0), 0);
+  };
+
   // Keep the dashboard cards in sync with the API response.
   const updateDashboardStats = (orders) => {
     const total = orders.length;
@@ -55,6 +60,7 @@ if (!adminToken) {
     const today = new Date();
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const todaysDeliveries = orders.filter((order) => order.deliveryDate === todayString).length;
+    const revenue = calculateRevenue(orders);
 
     if (totalOrdersElement) {
       totalOrdersElement.textContent = String(total);
@@ -66,6 +72,10 @@ if (!adminToken) {
 
     if (todayDeliveriesElement) {
       todayDeliveriesElement.textContent = String(todaysDeliveries);
+    }
+
+    if (revenueElement) {
+      revenueElement.textContent = `Rs.${revenue}`;
     }
   };
 
@@ -165,6 +175,7 @@ if (!adminToken) {
   const renderOrderDetails = (order) => {
     const statusText = order.status || 'Pending';
     const createdDate = order.createdAt ? formatDate(order.createdAt) : 'Not available';
+    const totalPrice = Number(order.price || 0);
     const createdTime = order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
@@ -237,6 +248,11 @@ if (!adminToken) {
       </div>
 
       <div class="modal-section">
+        <h4>Total Price</h4>
+        <p>Rs.${escapeHtml(totalPrice)}</p>
+      </div>
+
+      <div class="modal-section">
         <h4>Customer Notes</h4>
         <p>${escapeHtml(order.notes || 'No special instructions.')}</p>
       </div>
@@ -283,6 +299,7 @@ if (!adminToken) {
       const deliveryDateText = formatDate(order.deliveryDate);
       const deliveryTimeText = order.deliveryTime || 'Not selected';
       const deliveryAreaText = order.deliveryArea || 'Not provided';
+      const totalPrice = Number(order.price || 0);
 
       const card = document.createElement('article');
       card.className = 'order-card expanded';
@@ -300,6 +317,7 @@ if (!adminToken) {
           </div>
 
           <div class="order-card__header-actions">
+            <span class="price-badge">Rs.${escapeHtml(totalPrice)}</span>
             <span class="status-badge ${statusClass}">${escapeHtml(statusText)}</span>
             <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
           </div>
@@ -330,6 +348,11 @@ if (!adminToken) {
             <div class="product-badges">
               ${buildProductBadges(order)}
             </div>
+          </div>
+
+          <div class="price-strip">
+            <span class="price-label">Total Price</span>
+            <span class="price-value">Rs.${escapeHtml(totalPrice)}</span>
           </div>
 
           <div class="notes-block">
@@ -383,6 +406,7 @@ if (!adminToken) {
     const today = new Date();
     const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const todaysDeliveries = allOrders.filter((order) => order.deliveryDate === todayString).length;
+    const revenue = calculateRevenue(allOrders);
 
     if (totalOrdersElement) {
       totalOrdersElement.textContent = String(total);
@@ -394,6 +418,10 @@ if (!adminToken) {
 
     if (todayDeliveriesElement) {
       todayDeliveriesElement.textContent = String(todaysDeliveries);
+    }
+
+    if (revenueElement) {
+      revenueElement.textContent = `Rs.${revenue}`;
     }
   };
 

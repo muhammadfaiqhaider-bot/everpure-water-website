@@ -31,7 +31,7 @@ if (!adminToken) {
     const totalOrdersElement = document.getElementById('totalOrders');
     const pendingOrdersElement = document.getElementById('pendingOrders');
     const deliveredOrdersElement = document.getElementById('deliveredOrders');
-    const revenueElement = document.querySelectorAll('.summary-card .summary-value')[3];
+    const revenueElement = document.getElementById('revenueValue');
 
     const STORAGE_KEY = 'everpureAdminOrders';
     let orders = [];
