@@ -613,11 +613,9 @@ function initOrderFormValidation() {
       }
     }
 
-    // Time slot (radio group) — same as bottle, should always have a default.
-    const timeslotChecked = form.querySelector('input[name="timeslot"]:checked');
-    if (!timeslotChecked) {
-      isFormValid = false;
-    }
+  // Time slot removed from the form.
+  // Automatically use a default value.
+  const timeslotChecked = { value: "Any Time" };
 
     // Notes are optional — nothing to validate.
 
@@ -689,10 +687,7 @@ function initOrderFormValidation() {
          Net Total        = Subtotal + Delivery Charge
    ============================================================================ */
 
-// Flat delivery fee and the free-delivery threshold.
-// These are placeholder values — update them to match the real policy.
-const DELIVERY_CHARGE = 50;
-const FREE_DELIVERY_THRESHOLD = 1000;
+const DELIVERY_CHARGE = 0;
 
 // Declared outside the init function so initOrderFormValidation() can call
 // it after form.reset() without needing to re-select every element again.
@@ -734,12 +729,11 @@ function updateOrderSummary() {
 
   // Show a friendly empty state if nothing has been selected yet.
   summaryItems.innerHTML = itemsHtml || '<p class="summary-empty">No products selected yet.</p>';
-
-  const deliveryCharge = subtotal === 0 || subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-  const total = subtotal + deliveryCharge;
+const deliveryCharge = 0;
+const total = subtotal;
 
   summarySubtotal.textContent = `Rs. ${subtotal}`;
-  summaryDelivery.textContent = deliveryCharge === 0 ? 'Free' : `Rs. ${deliveryCharge}`;
+  summaryDelivery.textContent = 'Free';
   summaryTotal.textContent = `Rs. ${total}`;
   summaryArea.textContent = areaSelect && areaSelect.value !== '' ? areaSelect.value : '—';
 }
