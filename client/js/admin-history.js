@@ -28,6 +28,7 @@ if (!adminToken) {
     const statusFilter = document.getElementById('statusFilter');
     const sortOrder = document.getElementById('sortOrder');
     const ordersTableBody = document.getElementById('ordersTableBody');
+    const exportButton = document.getElementById('exportCsvBtn');
     const totalOrdersElement = document.getElementById('totalOrders');
     const pendingOrdersElement = document.getElementById('pendingOrders');
     const deliveredOrdersElement = document.getElementById('deliveredOrders');
@@ -59,13 +60,27 @@ if (!adminToken) {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
 
+    const escapeCsvValue = (value) => {
+      const stringValue = value === null || value === undefined ? '' : String(value);
+      if (/[",\n\r]/.test(stringValue)) {
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      }
+      return stringValue;
+    };
+
     const normalizeOrder = (order, fallbackId = '') => ({
       _id: order._id || order.id || fallbackId,
       id: order.id || order._id || fallbackId,
       fullName: order.fullName || order.customerName || order.name || 'Customer',
       phone: order.phone || 'Not provided',
+      email: order.email || 'Not provided',
+      address: order.address || 'Not provided',
+      bottle19L: Number(order.bottle19L || 0),
+      bottle1_5L: Number(order.bottle1_5L || 0),
+      bottle500ml: Number(order.bottle500ml || 0),
       deliveryArea: order.deliveryArea || order.area || 'Not provided',
       deliveryDate: order.deliveryDate || order.createdAt || order.orderDate || new Date().toISOString(),
+      deliveryTime: order.deliveryTime || 'Not provided',
       status: order.status || 'Pending',
       price: Number(order.price || 0),
       createdAt: order.createdAt || new Date().toISOString(),
@@ -142,6 +157,59 @@ if (!adminToken) {
       return filtered;
     };
 
+    const exportOrdersToCsv = () => {
+      const exportOrders = getFilteredOrders(orders);
+      const headers = [
+        'Serial Number',
+        'Order ID',
+        'Customer Name',
+        'Phone',
+        'Email',
+        'Delivery Address',
+        'Delivery Area',
+        'Delivery Date',
+        'Delivery Time',
+        '19L Bottle Quantity',
+        '1.5L Bottle Quantity',
+        '500ml Bottle Quantity',
+        'Status',
+        'Price'
+      ];
+
+      const rows = exportOrders.map((order, index) => [
+        index + 1,
+        order._id || order.id || 'N/A',
+        order.fullName || 'Customer',
+        order.phone || 'Not provided',
+        order.email || 'Not provided',
+        order.address || 'Not provided',
+        order.deliveryArea || 'Not provided',
+        order.deliveryDate || 'Not provided',
+        order.deliveryTime || 'Not provided',
+        order.bottle19L || 0,
+        order.bottle1_5L || 0,
+        order.bottle500ml || 0,
+        order.status || 'Pending',
+        Number.isFinite(Number(order.price)) ? `Rs.${Number(order.price)}` : 'Rs.0'
+      ]);
+
+      const csvContent = [headers, ...rows]
+        .map((row) => row.map((value) => escapeCsvValue(value)).join(','))
+        .join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      link.href = url;
+      link.download = 'EverPure_Order_History.csv';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
     const renderRows = (orderList) => {
       if (!ordersTableBody) {
         return;
@@ -210,6 +278,10 @@ if (!adminToken) {
         });
       }
     });
+
+    if (exportButton) {
+      exportButton.addEventListener('click', exportOrdersToCsv);
+    }
 
     const loadHistory = async () => {
       const deliveredOrders = await fetchDeliveredOrders();
