@@ -5,6 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginButton = document.getElementById("loginBtn");
   const loginMessage = document.getElementById("loginMessage");
 
+  const passwordToggle = document.querySelector(".password-toggle");
+  if (passwordToggle && passwordInput) {
+    passwordToggle.addEventListener("click", () => {
+      const isPasswordHidden = passwordInput.type === "password";
+      passwordInput.type = isPasswordHidden ? "text" : "password";
+      passwordToggle.setAttribute("aria-label", isPasswordHidden ? "Hide password" : "Show password");
+    });
+  }
+
   if (!loginForm || !usernameInput || !passwordInput || !loginButton || !loginMessage) {
     console.error("Admin login page is missing one or more required elements.");
     return;

@@ -20,6 +20,17 @@ if (!adminToken) {
   const todayDeliveriesElement = document.getElementById('todayDeliveries');
   const revenueElement = document.getElementById('revenueValue');
   const ordersList = document.querySelector('.orders-list');
+
+  const logoutButton = document.getElementById('logoutBtn');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+      localStorage.removeItem('everpureAdminToken');
+      localStorage.removeItem('everpureAdminUsername');
+      window.location.replace('admin-login.html');
+    });
+  }
+
+  
   const modalBackdrop = document.getElementById('orderModalBackdrop');
   const modalCloseButton = document.getElementById('orderModalClose');
   const modalContent = document.getElementById('orderModalContent');
