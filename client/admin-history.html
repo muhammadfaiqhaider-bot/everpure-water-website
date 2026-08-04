@@ -40,12 +40,16 @@
       </section>
 
       <section class="summary-grid" aria-label="Order history summary">
-        <article class="summary-card">
+        <!-- Hidden on the history page: every row here is already delivered, so
+             "Total Orders" and "Pending Orders" don't add information. The elements
+             stay in the DOM (just display:none) so admin-history.js keeps working
+             untouched. -->
+        <article class="summary-card is-hidden">
           <span class="summary-label">Total Orders</span>
           <strong class="summary-value" id="totalOrders">0</strong>
         </article>
 
-        <article class="summary-card">
+        <article class="summary-card is-hidden">
           <span class="summary-label">Pending Orders</span>
           <strong class="summary-value" id="pendingOrders">0</strong>
         </article>
@@ -68,7 +72,9 @@
             <input id="searchInput" type="text" placeholder="Search customer, phone..." />
           </label>
 
-          <label class="toolbar-field">
+          <!-- Hidden: every row is "Delivered", so filtering by status is a no-op here.
+               Left in the DOM so admin-history.js's element lookups still succeed. -->
+          <label class="toolbar-field is-hidden">
             <span>Status</span>
             <select id="statusFilter">
               <option value="all">All</option>

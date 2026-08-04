@@ -16,6 +16,13 @@
   --transition: 180ms ease;
 }
 
+/* Utility: used to hide fields that don't make sense on the delivered-only
+   history page (Pending/Total counts, Status filter, Status column) without
+   removing them from the DOM, so admin-history.js's element lookups keep working. */
+.is-hidden {
+  display: none !important;
+}
+
 /* ===================== BASE ===================== */
 * {
   box-sizing: border-box;
@@ -149,9 +156,11 @@ a {
 }
 
 /* ===================== SUMMARY GRID ===================== */
+/* auto-fit lets the two remaining cards (Delivered Orders, Total Revenue)
+   stretch to fill the row cleanly now that Total/Pending are hidden. */
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 14px;
   margin-top: 18px;
 }
@@ -194,9 +203,11 @@ a {
   box-shadow: var(--shadow);
 }
 
+/* Status filter is hidden, so the toolbar now only needs 3 columns:
+   Search / Sort / Export. */
 .panel-toolbar {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr 0.8fr auto;
+  grid-template-columns: 1.6fr 0.8fr auto;
   gap: 12px;
   align-items: end;
   margin-bottom: 16px;
@@ -288,6 +299,15 @@ a {
 .history-table tbody tr:hover {
   background: rgba(255, 255, 255, 0.05);
   transition: background var(--transition);
+}
+
+/* Status column (6th: Order ID, Customer, Phone, Area, Date, Status, Price, Actions)
+   is hidden — every row on this page is already "Delivered", so the column
+   carries no information. Cells stay in the markup rendered by admin-history.js,
+   just visually removed. */
+.history-table th:nth-child(6),
+.history-table td:nth-child(6) {
+  display: none;
 }
 
 .status-badge {

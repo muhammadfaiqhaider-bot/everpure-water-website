@@ -302,7 +302,7 @@ if (!adminToken) {
       const totalPrice = Number(order.price || 0);
 
       const card = document.createElement('article');
-      card.className = 'order-card expanded';
+      card.className = 'order-card';
       card.dataset.orderId = order._id || '';
       card.innerHTML = `
         <div class="order-card__header">
@@ -319,7 +319,7 @@ if (!adminToken) {
           <div class="order-card__header-actions">
             <span class="price-badge">Rs.${escapeHtml(totalPrice)}</span>
             <span class="status-badge ${statusClass}">${escapeHtml(statusText)}</span>
-            <button type="button" class="order-card__toggle" aria-expanded="true">Hide</button>
+            <button type="button" class="order-card__toggle" aria-expanded="false">Show</button>
           </div>
         </div>
 
