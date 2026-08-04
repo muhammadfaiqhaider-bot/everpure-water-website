@@ -10,58 +10,60 @@
   <div class="admin-shell">
     <!-- ===================== TOP NAVBAR ===================== -->
     <header class="topbar">
-      <div class="brand-block">
-        <h1>EverPure Admin</h1>
-        <p>Delivery operations dashboard</p>
-      </div>
+  <div class="brand-block">
+    <div class="brand-logo">
+      <img src="assets/logo/logo.png" alt="EverPure logo">
+    </div>
+    <div>
+      <p class="eyebrow">EverPure Admin</p>
+      <h1>Dashboard</h1>
+    </div>
+  </div>
 
-      <div class="topbar-stats">
-        <div class="stat-pill">
-          <span class="stat-label">Current Date</span>
-          <span class="stat-value" id="currentDate">—</span>
-        </div>
+  <div class="topbar-actions">
+    <a href="admin-history.html" class="topbar-btn topbar-btn--ghost">
+      <span class="topbar-btn__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M5 4h7v2H7v12h5v2H5zM13 7h6.6l-2.3-2.3 1.4-1.4 4.7 4.7-4.7 4.7-1.4-1.4 2.3-2.3H13z" /></svg>
+      </span>
+      <span>Order History</span>
+    </a>
 
-        <div class="stat-pill">
-          <span class="stat-label">Total Orders</span>
-          <span class="stat-value" id="totalOrders">0</span>
-        </div>
+    <button type="button" id="logoutBtn" class="topbar-btn topbar-btn--danger" aria-label="Logout from admin dashboard">
+      <span class="topbar-btn__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M10 17l1.4 1.4L16 13l-4.6-5.4L10 9l2.6 2.6H4v2h8.6L10 17Zm8-13h-8v2h8v12h-8v2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" /></svg>
+      </span>
+      <span>Logout</span>
+    </button>
+  </div>
+</header>
 
-        <div class="stat-pill">
-          <span class="stat-label">Pending Orders</span>
-          <span class="stat-value" id="pendingOrders">0</span>
-        </div>
+<section class="overview-panel">
+  <p class="eyebrow">Secure Overview</p>
+  <h2>Welcome, <span id="adminUsername">Admin</span></h2>
+</section>
 
-        <div class="stat-pill">
-          <span class="stat-label">Today's Deliveries</span>
-          <span class="stat-value" id="todayDeliveries">0</span>
-        </div>
-
-        <div class="stat-pill">
-          <span class="stat-label">Revenue</span>
-          <span class="stat-value" id="revenueValue">Rs.0</span>
-        </div>
-      </div>
-
-      <div class="topbar-actions">
-        <a href="admin-history.html" class="logout-btn header-link-btn">
-          <span class="logout-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 4h7v2H7v12h5v2H5zM13 7h6.6l-2.3-2.3 1.4-1.4 4.7 4.7-4.7 4.7-1.4-1.4 2.3-2.3H13z" />
-            </svg>
-          </span>
-          <span>Order History</span>
-        </a>
-
-        <button type="button" id="logoutBtn" class="logout-btn" aria-label="Logout from admin dashboard">
-          <span class="logout-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M10 17l1.4 1.4L16 13l-4.6-5.4L10 9l2.6 2.6H4v2h8.6L10 17Zm8-13h-8v2h8v12h-8v2h8a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" />
-            </svg>
-          </span>
-          <span>Logout</span>
-        </button>
-      </div>
-    </header>
+<div class="stats-row">
+  <div class="stat-pill">
+    <span class="stat-label">Current Date</span>
+    <span class="stat-value" id="currentDate">—</span>
+  </div>
+  <div class="stat-pill">
+    <span class="stat-label">Total Orders</span>
+    <span class="stat-value" id="totalOrders">0</span>
+  </div>
+  <div class="stat-pill">
+    <span class="stat-label">Pending Orders</span>
+    <span class="stat-value" id="pendingOrders">0</span>
+  </div>
+  <div class="stat-pill">
+    <span class="stat-label">Today's Deliveries</span>
+    <span class="stat-value" id="todayDeliveries">0</span>
+  </div>
+  <div class="stat-pill stat-pill--revenue">
+    <span class="stat-label">Revenue</span>
+    <span class="stat-value" id="revenueValue">Rs.0</span>
+  </div>
+</div>
 
     <!-- ===================== MAIN CONTENT ===================== -->
     <main class="dashboard-content">
