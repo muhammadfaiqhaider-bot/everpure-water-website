@@ -1,0 +1,12 @@
+{
+  "name": "everpure",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "install-server": "cd server && npm install",
+    "start": "cd server && npm start"
+  }
+}
