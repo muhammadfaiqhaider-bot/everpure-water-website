@@ -452,7 +452,7 @@ if (!adminToken) {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}/delivered`, {
+      const response = await fetch(`/api/orders/${orderId}/delivered`, {
         method: 'PUT',
       });
 
@@ -512,7 +512,7 @@ if (!adminToken) {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
+      const response = await fetch(`/api/orders/${orderId}`, {
         method: 'DELETE',
       });
 
@@ -600,7 +600,7 @@ if (!adminToken) {
     ordersList.innerHTML = '<div class="order-card"><p>Loading orders...</p></div>';
 
     try {
-      const response = await fetch('http://localhost:3000/api/orders');
+      const response = await fetch('/api/orders');
       if (!response.ok) {
         throw new Error('Request failed');
       }

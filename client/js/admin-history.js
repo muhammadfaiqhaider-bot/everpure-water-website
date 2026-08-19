@@ -40,7 +40,7 @@ if (!adminToken) {
 
     const fetchDeliveredOrders = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/orders/history');
+        const response = await fetch('/api/orders/history');
         if (!response.ok) {
           throw new Error('Failed to load history');
         }

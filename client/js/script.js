@@ -426,7 +426,7 @@ function resetOrderFormState(form, submitButton) {
 // ---------------------------------------------------------------------------
 async function submitOrderToBackend(orderData, form, submitButton) {
   try {
-    const response = await fetch('http://localhost:3000/api/orders', {
+    const response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData),
